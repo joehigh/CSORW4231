@@ -1,2 +1,2 @@
 # CSOR4231
-Analysis of Algorithms @ Columbia University
+Analysis of Algorithms @ Columbia
