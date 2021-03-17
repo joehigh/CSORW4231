@@ -1,0 +1,399 @@
+\documentclass[twoside,11pt]{homework}
+
+\coursename{CSOR W4231 Analysis of Algorithms I - Spring 2021} 
+
+\studname{Joseph High}
+\studmail{jph2185}
+\hwNo{3}
+\date{\today} 
+
+% Uncomment the next line if you want to use \includegraphics.
+%\usepackage{graphicx}
+\usepackage{graphicx}
+%\usepackage{fancyhdr}
+\usepackage{enumerate}
+\usepackage{amsmath}
+\usepackage{xfrac}
+\usepackage{relsize}
+\usepackage{mathtools}
+\usepackage{xfrac}
+\usepackage{dsfont}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[makeroom]{cancel}
+\usepackage{collectbox}
+\usepackage{placeins}
+%\usepackage{cleveref}
+\usepackage{eqnarray}
+%\usepackage{titlesec} 
+\usepackage{bm} 
+\usepackage{bbm}
+\usepackage{hyperref}
+\usepackage{flafter}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{algorithm}
+%\usepackage{algorithmic}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{subfig}
+\usepackage{soul}
+
+\algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+
+\algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
+
+\newcommand\NoDo{\renewcommand\algorithmicdo{}}
+\newcommand\ReDo{\renewcommand\algorithmicdo{\textbf{do}}}
+\newcommand\NoThen{\renewcommand\algorithmicthen{}}
+\newcommand\ReThen{\renewcommand\algorithmicthen{\textbf{then}}}
+\newcommand\NoEnd{\renewcommand\algorithmicend{}}
+\newcommand\NoFor{\renewcommand\algorithmicfor{}}
+\newcommand\NoProc{\renewcommand\algorithmicprocedure{}}
+\newcommand\NoIf{\renewcommand\algorithmicif{}}
+
+
+
+\newcommand{\commentsymbol}{{\color{blue} //}}% or \% or $\triangleright$
+\algrenewcommand\algorithmiccomment[1]{\hfill \commentsymbol{} #1}
+\makeatletter
+\newcommand{\LineComment}[2][\algorithmicindent]{\Statex \hspace{#1}\commentsymbol{} #2}
+\makeatother
+\newcommand{\varfont}{\texttt}
+
+%\makeatletter
+%\algrenewcommand\ALG@beginalgorithmic{\ttfamily}
+%\makeatother
+
+\algrenewcommand\textproc{\texttt}
+%\renewcommand*{\proofname}{Proof of Claim:}
+
+\begin{document}
+\maketitle
+
+%% PROBLEM ONE
+\section*{Problem 1}
+At a high level,  two modified versions of the DFS algorithm are constructed and used to traverse the input tree,  iteratively matching unmatched nodes.  The first modified DFS algorithm (\texttt{DFS-Leaves}),  traverses the tree to match all leaf nodes and the neighbor of each leaf node provided that they have not yet been matched.  The second modified version of DFS algorithm (\texttt{DFS-Match}) traverses the tree to match the remaining internal nodes that have not yet been matched.  The output of the algorithm is either \texttt{True}, indicating that the tree has a perfect matching, or \texttt{False},  indicating that no perfect matching exists.  \\
+
+\noindent
+The main procedure, \texttt{PerfectMatchTree}, initializes an array $matched$ that records which nodes have been matched, using a binary $\{0,1\}$ indicator ($0$ if node is not matched, $1$ if matched).  Next, the algorithm evaluates the tree and its attributes to determine whether it has a perfect matching.  If $|V| = 0$, the algorithm returns \texttt{True}, since a graph on zero nodes vacuously contains a perfect matching.  If $|V|$ is odd, the algorithm returns \texttt{False} since a perfect matching can only exist if the graph has an even number of vertices.  Otherwise, the algorithm runs \texttt{DFS-Leaves} first and then \texttt{DFS-Match}.  If the sum of all entries in the $matched$ array is $|V|$ then a perfect matching exists and the algorithm returns \texttt{True}; otherwise, a perfect matching does not exist and the algorithm returns \texttt{False}.   \\
+
+\noindent
+\textbf{Pseudocode and proof of correctness provided on the following two pages. }\\ 
+
+%\noindent
+%Given an adjacency list representation of a tree,  we can find the leaves of the tree in linear time. 
+
+%\noindent
+%\underline{Pseudocode}:
+\begin{algorithm}
+\begin{algorithmic}[1]
+\NoProc
+\Procedure{PerfectMatchTree}{$T=(V, E)$}
+\State $n = size(V)$   \Comment{{\color{blue} Define number of nodes in $T$. Running time: $O(1)$}}
+\State $matched = [  \ ]$  \Comment{{\color{blue} Initialize empty array.  Running time: $O(1)$}}
+% \State $M = [  \ ]$
+  \For{$u \in V$}     \Comment{{\color{blue} Initialize each entry in array to False.  Running time: $O(n)$}}
+  \State $matched[u] = 0$
+  \EndFor
+%\State $result = `` \  "$
+\If{$n == 0$}     \Comment{{\color{blue} Running time: $O(1)$}}
+\State \Return \texttt{`True'}
+\ElsIf{$n$ is odd}    \Comment{{\color{blue} Running time: $O(1)$}}
+\State \Return \texttt{`False'}
+\Else          
+   \State Run \Call{DFS-Leaves}{$T$}     \Comment{{\color{blue} Total running time: $O(n+m)$}}
+    \State Run \Call{DFS-Match}{$T$}     \Comment{{\color{blue} Total running time: $O(n+m)$}}
+   \If{$sum(matched) == n$}   \Comment{{\color{blue} Running time: $O(n)$}}
+   \State \Return \texttt{`True'}
+   \Else 
+   \State \Return \texttt{`False'}
+   \EndIf
+ \EndIf
+\EndProcedure \\
+
+%{\color{red} // Traverses the tree matching all leaf nodes and their neighbors.}
+\Procedure{DFS-Leaves}{$T=(V, E)$}  \Comment{{\color{blue} Only the modified portion shown}} \\
+  {\color{red} //Add the following to the beginning of the \texttt{Search} procedure in the DFS pseudocode}
+  \If{$degree(u) == 1$ \textbf{and} $matched[u] == 0$}     \Comment{{\color{blue} Running time: $O(1)$}}
+   \If{$matched[neighbor(u)] == 0$}
+   \State $matched[u] = 1$
+   \State $matched[neighbor(u)] = 1$
+   \Else
+   \State \Return \texttt{`False'}
+   \EndIf
+  \EndIf
+ \State \Return $matched$  \Comment{{\color{blue}Add to the end of the \texttt{Search} procedure}}
+\EndProcedure \\
+%{\color{red} // Traverses the tree matching all unmatched internal nodes. }
+\Procedure{DFS-Match}{$T=(V, E)$}  \Comment{{\color{blue} Only the modified portion shown}} \\
+  {\color{red} //Add the following to the beginning of the \texttt{Search} procedure in the DFS pseudocode}
+  \For{$(u, v) \in E$}     \Comment{{\color{blue} Iterates $deg(u)$ times for each $u \in V$}}
+  \If{$matched[u] == 0$ \textbf{and} $matched[v] == 0$}   
+  \State $matched[u] = 1$
+  \State $matched[v] = 1$
+  \EndIf
+  \EndFor
+ \State \Return $matched$  \Comment{{\color{blue}Add to the end of the \texttt{Search} procedure}}
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\noindent
+\underline{Running Time}:  Referring to the run-time comments in the pseudocode (in blue),  lines 2 and 3 require constant time,  the for-loop to initialize the $matched$ array (lines 4-6) requires $O(n)$ time,  and lines 7 through 10 requires constant time.  The \texttt{DFS-Leaves} procedure requires the usual $O(n+m)$ run time for the original DFS procedure and $O(n)$ time to match all leaves, for a total run time of $O(n+m)$ for \texttt{DFS-Leaves}.  The \texttt{DFS-Match} procedure also requires the usual $O(n+m)$ run time for the original DFS procedure and $O(m)$ time for the for-loop at lines 37-42 to run for \textit{each} node; indeed, for each node $u$, the for-loop iterates $deg(u)$ times. The total run time of \texttt{DFS-Match} is therefore $O(n+m)$. Therefore, the total run time of the entire algorithm is $$O(1) + O(n) + O(n+m) + O(n+m) = O(n+m)$$
+
+\noindent
+\underline{Correctness}:  %For $n = 0$, the algorithm returns \texttt{True}, since a graph on zero nodes vacuously contains a perfect matching.  If $|V|$ is odd, the algorithm returns \texttt{False} since a perfect matching can only exist if the graph has an even number of vertices.  
+The algorithm first matches all leaf nodes and their neighbors, provided that they have not yet been matched. Because leaf nodes have exactly one neighbor, a perfect matching necessarily includes all edges incident on leaf nodes.  If the neighbor of any unmatched leaf node has already been matched then a perfect matching does not exist.
+
+%% PROBLEM TWO
+\section*{Problem 2}
+A DP approach can be used to solve this problem.  At a high-level,  the algorithm counts the number of symbols in $S'$ that sequentially match $S$ (in order).  If the number of sequentially matched symbols is equal to the number of symbols in $S'$ ($=m$), the algorithm returns \texttt{True}. Otherwise, the algorithm returns \texttt{False}.  The subproblems consist of comparing the symbol $S'[k]$ to the symbol $S[t]$ for fixed $k$ and $t$,  where $k \leq t$.  The subproblems are iteratively solved one by one,  in increasing order.  If $S'[k] = S[t]$ for some fixed values $k$ and $t$, then we add $1$ to the count, which is stored in an array $M$ of size $n+1$ (includes the boundary condition),  from the bottom up.  In particular, 
+$$M[i] = 
+\begin{cases}
+M[i-1] + 1 \ ,  \ \textrm{ if }  S[i] = S'[j] \\
+M[i-1] \ \ \ \ \ \ ,  \ \textrm{ if }  S[i] \neq S'[j]
+\end{cases}
+$$
+Boundary condition:  $M[0] = 0$.  Pseudocode is provided below.
+
+\begin{algorithm}
+\begin{algorithmic}[1]
+\NoProc
+\Procedure{SubSequence}{$S$, $S'$}  
+\State $n = length(S)$
+\State $m = length(S')$
+\If{$m > n$}
+\State \Return \texttt{`False'}
+\EndIf
+\If{$m == 0$}
+\State \Return \texttt{`True'}
+\EndIf
+
+%\If{$m == n$ \textbf{and} $S[n] \neq S'[m]$}
+%\State \Return  \texttt{`False'}
+%\EndIf
+
+\State Let $M = array(n+1)$ 
+\State $M[0] = 0$
+\State $i = 1$
+\State $j = 1$
+\While{$i \leq n$ \textbf{and} $j \leq m$}
+\If{$S[i] == S'[j]$}
+\State $M[i] = M[i-1] + 1$
+\State $i = i + 1$
+\State $j = j + 1$
+\ElsIf{$S[i] \neq S'[j]$}
+\State $M[i] = M[i-1]$
+\State $i = i + 1$  
+\EndIf
+\EndWhile
+%\For{$i = 1$ \textbf{to} $n$}
+%\For{$j = 1$ \textbf{to} $m$}
+%\If{$S[i] == S'[j]$}
+%\State $M[i] = M[i-1] + 1$
+%\Else
+%\State $M[i] = M[i-1]$
+%\EndIf
+%\EndFor
+%\EndFor
+
+\If{$M[n] == m$}
+\State \Return \texttt{`True'}
+\Else \ \Return \texttt{`False'}
+\EndIf
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+
+
+\noindent
+\underline{Running Time}:  The symbols in the sequence $S'$ are compared to the symbols in $S$ over a maximum of $n$ iterations. Indeed, there are $n$ symbols in $S$, and if $m > n$ then no comparison is made since then $S'$ cannot be a subsequence of $S$.  Therefore, the running time is $O(n)$. \\
+
+
+% Because we are comparing a sequence of $m$ elements to a sequence of $n$ elements, there are $O(mn)$ subproblems.  
+\noindent
+\underline{Space}:  The algorithm requires an additional $\Theta(n)$ space for the array $M$.   The array $M$ is filled from the bottom up. \\
+
+\noindent
+\underline{Correctness}:  If $m = 0$,  the algorithm returns \texttt{True} regardless of the size of $S$ since an empty sequence is a subsequence of all sequences. 
+Otherwise,  the algorithm sequentially and iteratively compares the symbols in $S'$ to the symbols in $S$, adding $1$ to the number of matched symbols if a given subproblem has a truth value of \texttt{True}.  If $S'[k] = S[t]$ for some fixed values $k$ and $t$, the algorithm increments both $S'$ and $S$ to their next symbols so that $S'[k+1]$ is compared to $S[t+1]$; otherwise,  it increments to the subproblem comparing $S'[k]$ to $S[t+1]$.  Therefore, if elements $S'$ are all present in the same order in $S$, the algorithm will account for it.  
+
+
+
+
+
+%% PROBLEM THREE
+\section*{Problem 3}
+Construct a modified version of Dijkstra's algorithm such that it accounts for both the edge weights and the vertex costs.  In particular,  for each $(u, v) \in E$ where $u \in S$ and $v \in V - S$,  pick $v$ such that $dist[u] + w_{uv} + c_v$ is a minimum among all nodes in $V-S$.  In particular,  modify the \texttt{Update} procedure such that $dist[v]$ maintains the minimum weight and cost from $s$ to $u$, for all $u \in V-S$.  Additionally,  modify the \texttt{Initialize} procedure to initialize $dist[s] = c_s$.  Last,  \texttt{Dijkstra} is modified to return the $dist$ array.\\
+
+%\noindent
+%\hl{Equivalently,  construct a new graph $G'$ from $G$ where the weight of each edge in $G'$ is the sum of the original edge weight in $G$ plus the cost of each of its respective end point vertices.  Running Dijkstra's algorithm using only the updated edge weights gives the shortest path. } \\
+
+\noindent
+\underline{Pseudocode}:
+\begin{algorithm}
+\begin{algorithmic}[1]
+\State \textbf{\color{red} Note: Only the modified portion of each procedure is shown}
+\NoProc
+\Procedure{Dijkstra-Modified}{$G = (V, E, w, c),  s$}:  
+\State \Call{Initialize}{$G, s$}
+\State \vdots
+\State \dots \Call{Update}{$u, v$}
+\State \vdots
+\State \Return $dist$
+\EndProcedure \\
+
+\Procedure{Initialize}{$G, s$}
+\State \vdots
+\State $dist[s] = c_s$
+\EndProcedure \\
+
+\Procedure{Update}{$u, v$}:
+\If{$dist[v] > dist[u] + w_{uv} + c_v$}
+\State $dist[v] = dist[u] + w_{uv} + c_v$
+\State $prev[v] = u$
+\EndIf
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+
+\noindent
+\underline{Running Time}:   The running time is the same as the running time of Dijkstra's algorithm. That is, the run time is $O(n \log n + m \log n)$.  \\
+
+\noindent
+\underline{Correctness}:   Correctness follows from the validity of Dijkstra's Algorithm.  In particular, the modified algorithm returns the shortest \\
+
+
+%% PROBLEM FOUR
+\section*{Problem 4}
+This can be solved using a greedy approach.  In particular, we can progressively choose a locally optimal position for each of the guards.  In doing so,  the position of all guards will be globally optimal.  That is,  the minimum number of guards will be used to protect all paintings (to be shown in proof of correctness).    The first guard should be placed at either $x_1 + 1$ or $x_n - 1$ so that paintings on both his left and his right side,  within a distance of 1, are protected (if any paintings exist in those positions); this ensures that as many paintings as possible are being protected by the first guard.  Without loss of generality,  the first guard will be placed at position $x_1 + 1$ on the line $L$.  If any paintings are positioned before $x_1 + 2$ on the line,  we do not need to place any additional guards to protect those paintings since they are already being protected by the first guard.  Suppose the positions of paintings $x_2, \dots , x_k$ are less than $x_1 + 2$ (i.e.,  protected by the first guard), with $k \in \{2, \dots, n\}$.  The second guard should be placed using a similar approach.  That is, place the second guard at position $x_{k+1} +1$ so that he protects all paintings positioned on the interval $[x_{k+1},  x_{k+1} +2]$, on the line $L$.  Continue in this way until all paintings are guarded. \\
+
+%\noindent
+%\underline{Pseudocode}:
+\begin{algorithm}
+\begin{algorithmic}[1]
+\NoProc
+\Procedure{MinNumGuards}{$\{x_1, x_2, \dots, x_n\}$}    %\Comment{{\color{blue}  Returns guard positions \& \# of guards }}
+\State $X = array(n)$
+\For{$i=1$ \textbf{to} $n$}
+\State $X[i] = x_i$
+\EndFor
+\State $guardPositions = $ \Call{MinGuardPlacement}{$X$} 
+\State $minNumGuards = length(guardPositions)$
+\State \Return $guardPositions$,  $minNumGuards$   \Comment{{\color{blue}  Returns positions and \# of guards }}
+\EndProcedure \\
+
+
+\Procedure{MinGuardPlacement}{$X$}  
+%\State $X = array(n)$
+%\For{$i=1$ \textbf{to} $n$}
+%\State $X[i] = x_i$
+%\EndFor
+\State $guard = [ \ ]$   \Comment{{\color{blue} Initialize empty array for guard positions. }}
+\State $guard[1] = X[1] + 1$
+\State $j = 1$    \Comment{{\color{blue}  $j$ used to used to iterate through each guard. }}
+\For{$k=2$ \textbf{to} $n$}
+\If{$X[k] > guard[j]+1$}
+\State $guard[j+1] = X[k]+1$    \Comment{{\color{blue}  Place next guard at locally optimal position.}}
+\State $j = j+1$  \Comment{{\color{blue}  Increment $j$ for next guard position. }}
+\EndIf
+\EndFor
+\State \Return $guard$   \Comment{{\color{blue}  Returns guard positions }}
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\noindent
+\underline{Running Time}:  Constructing the array $X$ in the \texttt{MinNumGuards} procedure requires $O(n)$ time.   The for-loop in the \texttt{MinGuardPlacement} procedure iterates $n-1$ times and each of the entries of $X$ and $guard$ are evaluated exactly one time.  Thus, the \texttt{MinGuardPlacement} procedure requires $O(n)$ time.  Therefore, the total run-time is $O(n)$.
+
+\noindent
+\underline{Correctness}:  Let $g_i$ denote the position of guard $i$ for $i \in \{1, \dots, n\}$.  We induct on $n$ .\\
+Base Case ($n=1$): Exactly one guard is used to protect the painting at position $x_1$,  and is placed at position $g_1 = x_1 + 1$.  Clearly,  the minimum number of guards required to protect the one painting is $1$. \\
+Induction Hypothesis: Assume the algorithm outputs the minimum number of guards required to protect $n-1$ paintings at positions $x_1,  x_2, \dots,  x_{n-1}$. \\
+Inductive Step: Let $K$ denote the minimum number of guard to protect the $n-1$ paintings.  That is, suppose that paintings at positions $x_i, \dots, x_{n-1}$ are protected by the $K^{th}$ guard, for $i \in \{2, \dots, n-1\}$.  If $x_n \leq g_K + 1$,  then the number of guards required to protect all $n$ paintings output by the algorithm is $K$, which is the minimum number of guards required to protect the first $n-1$ paintings,  from the inductive hypothesis.  Thus, the minimum number of guards required for all $n$ paintings when $x_n \leq g_K + 1$ is $K$.  Therefore,  the algorithm outputs the minimum number of guards required for all $n$ paintings when $x_n \leq g_K + 1$.  On the other hand, if $x_n > g_K + 1$,  the algorithm places a guard at position $x_n + 1$ since the painting at position $x_n$ is too far from the guard at position $g_k$ to be able to protect it.  That is,  an additional guard must be used to protect the $n^{th}$ painting.  Then the algorithm outputs $K+1$ and the positions of each of the guards.  Because $K$ is the minimum number of guards required for the first $n-1$ paintings, then $K+1$ is the minimum number required for all $n$ paintings when $x_n > g_K + 1$. Therefore, the algorithm outputs the minimum number of guards in all cases. 
+
+
+
+
+%% PROBLEM FIVE
+\section*{Problem 5}
+This can be solved using a DP approach.  Let $OPT(j)$ be the minimum total cost to store books in some libraries.  We know that a copy is always stored at $L_n$.  Suppose $i$ is the largest index less than $n$ such that a copy is stored at $L_i$ in the optimal solution,  then $OPT(n) = c_n + OPT(n-1)$.  \\
+
+\noindent
+Let the subproblems be such that we must choose $L_1, \dots, L_j$ to store copies of the book at. There are two cases: one in which we incur a storage cost $c_j$ for storing at library $L_j$, or there is a user delay penalty $(k-j)$ if a copy is not stored at $L_j$.  That is, 
+$$OPT(j) = \min 
+\begin{cases} 
+c_j + OPT(j-1) \ \ \ \ \ \ \ \ , \ \ \textrm{if a copy is stored at } L_k \\
+ (i-j) + OPT(j-1) \ \ , \ \ \textrm{if a copy is not stored at } L_k \textrm{ for some } i > j
+\end{cases}
+$$
+Let $d_{j, i} = i - j$ denote the user delay when a book is not available at $L_j$, but available at $L_i$, for $i>j$.  We then have
+$$OPT(j) = \min \{c_j + OPT(j-1), \ d_{j, i} + OPT(j-1) \}  $$
+Set a boundary condition $OPT(0) = 0$.   Use an array $M$ to store the values of $OPT(j)$.   \\
+
+\noindent
+\textbf{Pseudocode provided on the next page - does not fit on this page.}\\ 
+
+\begin{algorithm}
+\begin{algorithmic}[1]
+\NoProc
+\Procedure{MinStorageCost}{$n$}:  
+\State Initialize array $M[0,  \dots, n]$
+\State Set $M[0] = 0$
+\For{$j = 1$ \textbf{to} $n$}
+\For{$i \geq j$}
+\State $d_{j, i} = i - j$   \Comment{{\color{blue}  Compute and store all possible user delay values}}
+\EndFor
+\EndFor
+
+\For{$j = 1$ \textbf{to} $n$}
+\State $M[j] = \mathlarger{\min \{c_j + M[j-1], \ d_{j, i} + M[j-1] \} }$
+\EndFor
+\State \Return $M[n]$
+\EndProcedure \\
+
+\Procedure{OptLibraries}{$j$}:  
+\If{$j==0$} \Return
+\Else
+\If{$M[j] == c_j + M[j-1]$}
+\State Output $L_j$
+\State \Call{OptLibraries}{$j-1$}
+\ElsIf{$M[j] == d_{j,i} + M[j-1]$}
+\State \Call{OptLibraries}{$j-1$}
+\EndIf
+\EndIf
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+%$$OPT(j) = \min_{1 \leq i \leq j} \{c_n + (n-i)(1-x_i) + c_jx_j + (j-i)(1-x_i) + OPT(i-1) \}  $$
+%where $x_i \in \{0, 1\}$ for all $i \in \{1, \dots, n-1\}$. That is, 
+%$$x_k =
+%\begin{cases}
+%1 \ \ , \ \ \textrm{if a copy is stored at } L_k \\
+%0 \ \ , \ \ \textrm{otherwise}
+%\end{cases}
+%$$
+%Note the $c_n + (n-i)(1-x_i)$ term in $OPT(j)$ indicates that a copy is always stored at $L_n$.  More,  notice that if a copy is stored at $L_i$ for some $i$, then $(n-i)(1-x_i) = 0$ and $(j-i)(1-x_i) = 0$, and hence no user delay for users checking out the book at $L_i$.  On the otherhand, if a copy is not stored at $L_i$,  there $(n-i) + (j-i)$ contributes to the user delay cost/penalty, in addition to the user delay penalty terms in $OPT(j-1)$.   \\
+
+\noindent
+
+\noindent
+\underline{Running Time}:  There are $n$ subproblems. The bottleneck of the algorithm are the two nested for-loops, each of which iterates $n$ times, in the \texttt{MinStorageCost} procedure.  Therefore,  the run time is $O(n^2)$.  \\
+
+\noindent
+\underline{Space}:  Additional space requirement is $\Theta(n)$ for the array $M$.  \\
+
+\noindent
+\underline{Correctness}:  The recurrence provided in the algorithm computes the minimum cost between storing a copy at library $L_j$ or not storing a copy at $L_j$, for $j \in \{1, \dots, n\}$.  The minimal cost at iteration $j$ depends on both the cost at $L_j$, or the user delay at server $j$ and on the minimum cost at iteration $j-1$.  Because each $M[j-1]$ returns the minimum cost, $M[j$ must also return the minimum cost.  To show this,  induct on $j$ :
+
+\noindent
+Base case ($j = 0$):  $M[0] = 0$ is trivially the minimum cost for $j=0$.  \\
+Induction Hypothesis:  Suppose $M[j-1]$ returns the minimum cost for $L_1, \dots, L_{j-1}$. \\
+Inductive Step:  $M[j] = \mathlarger{\min \{c_j + M[j-1], \ d_{j, i} + M[j-1] \} }$.  From the induction hypothesis, $M[j-1]$ returns the minimum cost, then computing the minimum reduces to $min{c_j, d_{j
+
+
+\end{document}
