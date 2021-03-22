@@ -73,13 +73,13 @@
 
 %% PROBLEM ONE
 \section*{Problem 1}
-At a high level,  two modified versions of the DFS algorithm are constructed and used to traverse the input tree,  iteratively matching unmatched nodes.  The first modified DFS algorithm (\texttt{DFS-Leaves}),  traverses the tree to match all leaf nodes and the neighbor of each leaf node provided that they have not yet been matched.  The second modified version of DFS algorithm (\texttt{DFS-Match}) traverses the tree to match the remaining internal nodes that have not yet been matched.  The output of the algorithm is either \texttt{True}, indicating that the tree has a perfect matching, or \texttt{False},  indicating that no perfect matching exists.  \\
+Two modified versions of the DFS algorithm are constructed and used to traverse the input tree,  iteratively matching unmatched nodes.  The first modified DFS algorithm (\texttt{DFS-Leaves}),  traverses the tree to match all leaf nodes and the neighbor of each leaf node provided that they have not yet been matched.  The second modified version of DFS algorithm (\texttt{DFS-Match}) traverses the tree to match the remaining internal nodes that have not yet been matched.  The output of the algorithm is either \texttt{True}, indicating that the tree has a perfect matching, or \texttt{False},  indicating that no perfect matching exists.  \\
 
 \noindent
 The main procedure, \texttt{PerfectMatchTree}, initializes an array $matched$ that records which nodes have been matched, using a binary $\{0,1\}$ indicator ($0$ if node is not matched, $1$ if matched).  Next, the algorithm evaluates the tree and its attributes to determine whether it has a perfect matching.  If $|V| = 0$, the algorithm returns \texttt{True}, since a graph on zero nodes vacuously contains a perfect matching.  If $|V|$ is odd, the algorithm returns \texttt{False} since a perfect matching can only exist if the graph has an even number of vertices.  Otherwise, the algorithm runs \texttt{DFS-Leaves} first and then \texttt{DFS-Match}.  If the sum of all entries in the $matched$ array is $|V|$ then a perfect matching exists and the algorithm returns \texttt{True}; otherwise, a perfect matching does not exist and the algorithm returns \texttt{False}.   \\
 
 \noindent
-\textbf{Pseudocode and proof of correctness provided on the following two pages. }\\ 
+\textbf{Pseudocode and correctness provided on the following two pages. }\\ 
 
 %\noindent
 %Given an adjacency list representation of a tree,  we can find the leaves of the tree in linear time. 
@@ -140,11 +140,25 @@ The main procedure, \texttt{PerfectMatchTree}, initializes an array $matched$ th
 \end{algorithm}
 
 \noindent
-\underline{Running Time}:  Referring to the run-time comments in the pseudocode (in blue),  lines 2 and 3 require constant time,  the for-loop to initialize the $matched$ array (lines 4-6) requires $O(n)$ time,  and lines 7 through 10 requires constant time.  The \texttt{DFS-Leaves} procedure requires the usual $O(n+m)$ run time for the original DFS procedure and $O(n)$ time to match all leaves, for a total run time of $O(n+m)$ for \texttt{DFS-Leaves}.  The \texttt{DFS-Match} procedure also requires the usual $O(n+m)$ run time for the original DFS procedure and $O(m)$ time for the for-loop at lines 37-42 to run for \textit{each} node; indeed, for each node $u$, the for-loop iterates $deg(u)$ times. The total run time of \texttt{DFS-Match} is therefore $O(n+m)$. Therefore, the total run time of the entire algorithm is $$O(1) + O(n) + O(n+m) + O(n+m) = O(n+m)$$
+\underline{Running Time}:  Referring to the run-time comments in the pseudocode (in blue),  lines 2 and 3 require constant time,  the for-loop to initialize the $matched$ array (lines 4-6) requires $O(n)$ time,  and lines 7 through 10 requires constant time.  The \texttt{DFS-Leaves} procedure requires the usual $O(n+m)$ run time for the original DFS procedure and $O(n)$ time to match all leaves, for a total run time of $O(n+m)$ for \texttt{DFS-Leaves}.  The \texttt{DFS-Match} procedure also requires the usual $O(n+m)$ run time for the original DFS procedure and $O(m)$ time for the for-loop at lines 37-42 to run for \textit{each} node; indeed, for each node $u$, the for-loop iterates $deg(u)$ times. The run time of \texttt{DFS-Match} is therefore $O(n+m)$.  Hence, the total run time is $$O(1) + O(n) + O(n+m) + O(n+m) = O(n+m)$$
+Because trees are such that $|E| = |V|-1$, the run time is $O(n+m) = O(2n-1) = O(n)$.  \\
 
 \noindent
-\underline{Correctness}:  %For $n = 0$, the algorithm returns \texttt{True}, since a graph on zero nodes vacuously contains a perfect matching.  If $|V|$ is odd, the algorithm returns \texttt{False} since a perfect matching can only exist if the graph has an even number of vertices.  
-The algorithm first matches all leaf nodes and their neighbors, provided that they have not yet been matched. Because leaf nodes have exactly one neighbor, a perfect matching necessarily includes all edges incident on leaf nodes.  If the neighbor of any unmatched leaf node has already been matched then a perfect matching does not exist.
+\underline{Correctness}:  For $n = 0$, the algorithm returns \texttt{True}, since a graph on zero nodes vacuously contains a perfect matching.  If $|V|$ is odd, the algorithm returns \texttt{False} since a perfect matching can only exist if the graph has an even number of vertices.  
+Otherwise,  the algorithm first matches all leaf nodes and their neighbors, provided that they have not yet been matched. Because leaf nodes have exactly one neighbor, a perfect matching necessarily includes all edges incident on leaf nodes.  If the neighbor of any unmatched leaf node has already been matched then a perfect matching does not exist. The algorithm adds a $1$ to $matched[k]$ if vertex $V[k]$ is matched, and a $0$ otherwise.  If the sum of all entries in the $matched$ array is $|V|$ then a perfect matching exists and the algorithm returns \texttt{True}; otherwise, a perfect matching does not exist and the algorithm returns \texttt{False}.   Indeed,  a graph has a perfect matching if and only if \textit{every} node in $V$ is matched by exactly one edge. \\ \\
+
+%Induct on $n$. \\ 
+%Base case ($n=0$): For $n = 0$, the algorithm returns \texttt{True}, since a graph on zero nodes vacuously contains a perfect matching.  \\
+%Induction Hypothesis: Assume the algorithm successfully returns the appropriate truth value for trees with $|V| \in \{1, 2, \dots, n-1\}$. \\
+%Inductive Step: Let $T = (V, E)$ be a tree on $n$ nodes.  Now consider the tree $T - \{v\}$,  for some $v \in V$.  There are two cases. \\
+%\textit{Case I}:  $T$ has a perfect matching.  For $T$ to have a perfect matching, $|V|$ must be even $\Longrightarrow \ T - \{v\}$ has an odd number of nodes.  Therefore,  $T - \{v\}$ cannot have have a perfect matching in this case.  By the induction hypothesis, the tree
+%
+%By the induction hypothesis,  if $T$ has a perfect matching, the algorithm returns \texttt{True}; otherwise, it returns \texttt{False}. 
+
+\noindent
+\textit{Alternative Method} \\
+An alternative approach to this problem is to use a "greedy" or DP approach (which is likely what we were intended to do, but I did not realize it until it was too late).  In particular,  an alternative algorithm that evaluates whether sub-trees of the original tree have a perfect matching,  where the set of sub-trees consists of nodes with neighboring leaf nodes, all of their adjacent leaf nodes, and their edges.  The algorithm partitions the tree into sub-trees consisting of all the nodes with neighboring leaf nodes and their adjacent leaf nodes, and their edges.  The algorithm deletes all leaves and their neighbors from the tree and stores them to be evaluated later.  Nodes with degree $> 1$ are stored with all of their leaf neighbors.  All edges incident to the nodes deleted from the tree are also deleted.  If the remaining graph has nodes and edges after deleting the first round of sub-trees,  the algorithm repeats the above.  Indeed, it necessarily has leaf nodes since it was a tree to begin with.  Once there are no nodes to partition, the algorithm evaluates each sub-tree for a perfect matching,  and storing the results.  The sub-trees have a perfect matching if and only if the sub-trees have exactly one leaf node; if any node has more than one leaf node, then a perfect matching cannot exist because the parent node can be matched at most once  Thus, if a sub-tree has more than one leaf node, return \texttt{False}.  If all sub-trees have a perfect matching,  the algorithm returns \texttt{True}.
+
 
 %% PROBLEM TWO
 \section*{Problem 2}
@@ -264,7 +278,7 @@ Construct a modified version of Dijkstra's algorithm such that it accounts for b
 \underline{Running Time}:   The running time is the same as the running time of Dijkstra's algorithm. That is, the run time is $O(n \log n + m \log n)$.  \\
 
 \noindent
-\underline{Correctness}:   Correctness follows from the validity of Dijkstra's Algorithm.  In particular, the modified algorithm returns the shortest \\
+\underline{Correctness}:   Correctness follows from the correctness/validity of Dijkstra's algorithm, which computes, for all $u \in V$,  the weight of the shortest $s-u$ path.  Therefore, under the modified definition of the weight of a path, this modified version of  Dijkstra's algorithm computes and returns the weight of the shortest $s-u$ path, for all $u \in V$.
 
 
 %% PROBLEM FOUR
@@ -339,8 +353,10 @@ Set a boundary condition $OPT(0) = 0$.   Use an array $M$ to store the values of
 
 \begin{algorithm}
 \begin{algorithmic}[1]
+\caption{Computes the min total cost and the set of libraries that achieve the min.}
 \NoProc
-\Procedure{MinStorageCost}{$n$}:  
+\Procedure{MinStorageCost}{$n,  C= [c_1, \dots, c_n]$}:       \Comment{{\color{blue}  Computes the total min cost}}
+%\text{\color{gray} The input $C = [c_1, \dots, c_n]$ is the array of storage costs} 
 \State Initialize array $M[0,  \dots, n]$
 \State Set $M[0] = 0$
 \For{$j = 1$ \textbf{to} $n$}
@@ -349,13 +365,14 @@ Set a boundary condition $OPT(0) = 0$.   Use an array $M$ to store the values of
 \EndFor
 \EndFor
 
-\For{$j = 1$ \textbf{to} $n$}
+\For{$j = 1$ \textbf{to} $n-1$}     \Comment{{\color{blue}  Computes $OPT(j)$ for $L_1, \dots, L_{n-1}$.}}
 \State $M[j] = \mathlarger{\min \{c_j + M[j-1], \ d_{j, i} + M[j-1] \} }$
 \EndFor
+\State $M[n] = c_n + M[n-1]$     \Comment{{\color{blue}  Since a copy is always stored at $L_n$}}
 \State \Return $M[n]$
 \EndProcedure \\
 
-\Procedure{OptLibraries}{$j$}:  
+\Procedure{OptLibraries}{$j, M$}:  \Comment{{\color{blue}  Computes the set of libraries that achieve the min}}
 \If{$j==0$} \Return
 \Else
 \If{$M[j] == c_j + M[j-1]$}
@@ -393,7 +410,9 @@ Set a boundary condition $OPT(0) = 0$.   Use an array $M$ to store the values of
 \noindent
 Base case ($j = 0$):  $M[0] = 0$ is trivially the minimum cost for $j=0$.  \\
 Induction Hypothesis:  Suppose $M[j-1]$ returns the minimum cost for $L_1, \dots, L_{j-1}$. \\
-Inductive Step:  $M[j] = \mathlarger{\min \{c_j + M[j-1], \ d_{j, i} + M[j-1] \} }$.  From the induction hypothesis, $M[j-1]$ returns the minimum cost, then computing the minimum reduces to $\min \{c_j, d_{j, i}\}$ which will return the minimum. Thus, $M[j]$ returns the minimum total cost for $L_1, \dots , L_j$.  Similarly, $M[n]$ returns the minimum total cost for $L_1, \dots , L_n$
+Inductive Step:  $M[j] = \mathlarger{\min \{c_j + M[j-1], \ d_{j, i} + M[j-1] \} }$.  From the induction hypothesis, $M[j-1]$ returns the minimum cost, then computing the minimum reduces to $\min \{c_j, d_{j, i}\}$ which will return the minimum. Thus, $M[j]$ returns the minimum total cost for $L_1, \dots , L_j$.  Similarly, $M[n]$ returns the minimum total cost for $L_1, \dots , L_n$ \\
 
+\noindent
+\textbf{Pseudocode provided on the next page.}
 
 \end{document}
