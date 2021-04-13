@@ -1,0 +1,409 @@
+\documentclass[twoside,11pt]{homework}
+
+\coursename{CSOR W4231 Analysis of Algorithms - Spring 2021} 
+
+\studname{Joseph High}
+\studmail{jph2185}
+\hwNo{4}
+\date{\today} 
+
+% Uncomment the next line if you want to use \includegraphics.
+%\usepackage{graphicx}
+\usepackage{graphicx}
+%\usepackage{fancyhdr}
+\usepackage{enumerate}
+\usepackage{amsmath}
+\usepackage{xfrac}
+\usepackage{relsize}
+\usepackage{mathtools}
+\usepackage{xfrac}
+\usepackage{dsfont}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[makeroom]{cancel}
+\usepackage{collectbox}
+\usepackage{placeins}
+%\usepackage{cleveref}
+\usepackage{eqnarray}
+%\usepackage{titlesec} 
+\usepackage{bm} 
+\usepackage{bbm}
+\usepackage{hyperref}
+\usepackage{flafter}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{algorithm}
+%\usepackage{algorithmic}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{subfig}
+\usepackage{soul}
+
+\algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+
+\algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
+
+\newcommand\NoDo{\renewcommand\algorithmicdo{}}
+\newcommand\ReDo{\renewcommand\algorithmicdo{\textbf{do}}}
+\newcommand\NoThen{\renewcommand\algorithmicthen{}}
+\newcommand\ReThen{\renewcommand\algorithmicthen{\textbf{then}}}
+\newcommand\NoEnd{\renewcommand\algorithmicend{}}
+\newcommand\NoFor{\renewcommand\algorithmicfor{}}
+\newcommand\NoProc{\renewcommand\algorithmicprocedure{}}
+\newcommand\NoIf{\renewcommand\algorithmicif{}}
+
+
+
+\newcommand{\commentsymbol}{{\color{blue} //}}% or \% or $\triangleright$
+\algrenewcommand\algorithmiccomment[1]{\hfill \commentsymbol{} #1}
+\makeatletter
+\newcommand{\LineComment}[2][\algorithmicindent]{\Statex \hspace{#1}\commentsymbol{} #2}
+\makeatother
+\newcommand{\varfont}{\texttt}
+
+%\makeatletter
+%\algrenewcommand\ALG@beginalgorithmic{\ttfamily}
+%\makeatother
+
+\algrenewcommand\textproc{\texttt}
+%\renewcommand*{\proofname}{Proof of Claim:}
+
+\begin{document}
+\maketitle
+
+%% PROBLEM ONE
+\section*{Problem 1}
+
+\begin{enumerate}[\bf (a)]
+
+\item At every time step $t > 1$,  there are $t-1$ possible destinations for the outgoing edge leaving $v_t$ in time step $t$.  Since a destination node is chosen uniformly at random,  the probability that node $v_j$ is chosen in time step $t$ is $\frac{1}{t-1}$.  
+
+Let $X$ denote the random variable equal to the total number of edges entering node $v_j$ at time step $n$.  For $t > j$,  let $X_t$ denote the (random) indicator variable that indicates whether or not $v_j$ is the destination of the edge leaving node $v_t$ at time step $t$.  That is, 
+
+$X_t = 
+\begin{cases}
+1  ,  \ \ \textrm{if node } v_j \textrm{ is chosen as the destination node at time step }  t,  \textrm{  for }  t>j \\
+0 ,  \ \ \textrm{otherwise}
+\end{cases}
+$
+
+Then $\mathlarger{X = \sum_{t = j+1}^n X_t}$  and  $P\{X_t = 1\}  = \frac{1}{t-1}$ in time step $t$.  We then have: 
+\begin{align*}
+\mathbb{E}\left[ X \right]  = \mathbb{E}\left[ \sum_{t=j+1}^{n} X_t \right] = \sum_{t=j+1}^{n} \mathbb{E}\left[X_t\right]  &=  \sum_{t=j+1}^{n} P\{X_t = 1\} \\[0.4em]
+& = \  \sum_{t=j+1}^{n} \frac{1}{t-1} \ = \ \sum_{t=j}^{n-1} \frac{1}{t} \\[0.4em]
+& = \ \sum_{t=1}^{n-1} \frac{1}{t} \ - \ \sum_{t=1}^{j-1} \frac{1}{t} \\[0.4em]
+{\small (n-1)^{st} \textit{\small  and  } (j-1)^{st} \textit{ \small  harmonic numbers}} \ \ \ \ \ \ \ \ \ \ \ \ \ \ & = \ H_{n-1} - H_{j-1} \\[0.4em]
+\textit{\small from equation A.7 in Appendix A.1} \ \ \ \ \ \ \ \ \ \ \ \ \ \ & = \ \left[\ln(n-1) + O(1)\right]  -  \left[\ln(j-1) + O(1)\right] \\[0.4em]
+& = \ln\left(\frac{n-1}{j-1}\right) + O(1)
+\end{align*}
+%Furthermore, we know that the $n^{th}$ harmonic series is bounded by $\Theta(\ln n)$. 
+Furthermore,  the expected number of edges entering node $v_j$ is bounded by \\[0.3em]
+ $\mathlarger{\Theta\left(\ln\left(\frac{n-1}{j-1}\right)\right) \ = \ \Theta\left(\ln\left(\frac{n}{j}\right)\right)}$.
+
+
+\item Let $X$ denote the random variable equal to the total number of nodes in $G$ with no incoming edges at time step $n$.  Let $X_i$ denote the (random) indicator variable that indicates whether or not $v_i$ has no incoming edges at time step $i$.  That is, 
+
+$X_i = 
+\begin{cases}
+1  ,  \ \ \textrm{if  } \ indeg(v_i) = 0 \ \textrm{  at time step }  n\\
+0 ,  \ \ \textrm{otherwise}
+\end{cases}
+$
+
+Then,  $\mathlarger{X = \sum_{i = 1}^n X_i}$ denotes the number of nodes with no incoming edges.   %and  $P\{X_i = 1\}  = 1 - \frac{1}{t-1} $  in time step $t$. We then have: 
+
+For the following, let $(v_k, v_i)$ denote the directed edge leaving node $v_k$ and entering $v_i$. 
+\begin{align*}
+\mathbb{E}\left[ X \right]  = \mathbb{E}\left[ \sum_{i=1}^{n} X_i \right] = \sum_{i=1}^{n} \mathbb{E}\left[X_i\right]  &=  \sum_{i=1}^{n} P\{X_i = 1\}    \\[0.4em]
+& =  \sum_{i=1}^{n} P\left[\{ (v_{i+1}, v_i) \notin E \} \cup \{(v_{i+2}, v_i) \notin E \} \cup \cdots \cup \{(v_{n}, v_i) \notin E \}\right] \\[0.4em]
+& = \sum_{i=1}^{n} P\{ (v_{i+1}, v_i) \notin E \} P\{ (v_{i+2}, v_i) \notin E \} \cdots P\{ (v_{n}, v_i) \notin E \} \\[0.4em]
+& = \sum_{i=1}^{n} \left(1 - \frac{1}{i}\right)\left(1 - \frac{1}{i+1}\right)\left(1 - \frac{1}{i+2}\right) \cdots \left(1 - \frac{1}{n-1}\right) \\[0.4em]
+& = \sum_{i=1}^{n} \left(\frac{i-1}{i}\right)\left(\frac{i}{i+1}\right)\left(\frac{i+1}{i+2} \right) \cdots \left(\frac{n-2}{n-1}\right) \\[0.4em]
+& = \sum_{i=1}^{n}  \frac{i-1}{n-1} \\[0.5em]
+& = \frac{1}{n-1}\left[\sum_{i=1}^{n} i -  \sum_{i=1}^{n} 1 \right] \\[0.5em]
+& = \frac{1}{n-1}\left[\frac{n(n+1)}{2} -  n \right] = \frac{1}{n-1}\left[\frac{n(n-1)}{2}\right] \\[0.5em]
+& = \frac{n}{2}
+\end{align*}
+
+Hence, the expected number of nodes with no incoming edges is \ $\mathlarger{\frac{n}{2}}$.
+\end{enumerate}
+
+
+
+%\noindent
+%\underline{Pseudocode}:
+%\begin{algorithm}
+%\begin{algorithmic}[1]
+%\NoProc
+%\Procedure{PerfectMatchTree}{$T=(V, E)$}
+%\State $n = size(V)$   \Comment{{\color{blue} Define number of nodes in $T$. Running time: $O(1)$}}
+%\State $matched = [  \ ]$  \Comment{{\color{blue} Initialize empty array.  Running time: $O(1)$}}
+%% \State $M = [  \ ]$
+%  \For{$u \in V$}     \Comment{{\color{blue} Initialize each entry in array to False.  Running time: $O(n)$}}
+%  \State $matched[u] = 0$
+%  \EndFor
+%\If{$n == 0$}     \Comment{{\color{blue} Running time: $O(1)$}}
+%\State \Return \texttt{`True'}
+%\ElsIf{$n$ is odd}    \Comment{{\color{blue} Running time: $O(1)$}}
+%\State \Return \texttt{`False'}
+%\Else          
+%   \State Run \Call{DFS-Leaves}{$T$}     \Comment{{\color{blue} Total running time: $O(n+m)$}}
+%    \State Run \Call{DFS-Match}{$T$}     \Comment{{\color{blue} Total running time: $O(n+m)$}}
+%   \If{$sum(matched) == n$}   \Comment{{\color{blue} Running time: $O(n)$}}
+%   \State \Return \texttt{`True'}
+%   \Else 
+%   \State \Return \texttt{`False'}
+%   \EndIf
+% \EndIf
+%\EndProcedure \\
+%
+%\Procedure{DFS-Leaves}{$T=(V, E)$}  \Comment{{\color{blue} Only the modified portion shown}} \\
+%  {\color{red} //Add the following to the beginning of the \texttt{Search} procedure in the DFS pseudocode}
+%  \If{$degree(u) == 1$ \textbf{and} $matched[u] == 0$}     \Comment{{\color{blue} Running time: $O(1)$}}
+%   \If{$matched[neighbor(u)] == 0$}
+%   \State $matched[u] = 1$
+%   \State $matched[neighbor(u)] = 1$
+%   \Else
+%   \State \Return \texttt{`False'}
+%   \EndIf
+%  \EndIf
+% \State \Return $matched$  \Comment{{\color{blue}Add to the end of the \texttt{Search} procedure}}
+%\EndProcedure \\
+%
+%\Procedure{DFS-Match}{$T=(V, E)$}  \Comment{{\color{blue} Only the modified portion shown}} \\
+%  {\color{red} //Add the following to the beginning of the \texttt{Search} procedure in the DFS pseudocode}
+%  \For{$(u, v) \in E$}     \Comment{{\color{blue} Iterates $deg(u)$ times for each $u \in V$}}
+%  \If{$matched[u] == 0$ \textbf{and} $matched[v] == 0$}   
+%  \State $matched[u] = 1$
+%  \State $matched[v] = 1$
+%  \EndIf
+%  \EndFor
+% \State \Return $matched$  \Comment{{\color{blue}Add to the end of the \texttt{Search} procedure}}
+%\EndProcedure
+%\end{algorithmic}
+%\end{algorithm}
+
+
+
+
+
+
+
+%% PROBLEM TWO
+\subsection*{Problem 2}
+
+Did not have time to complete. Move on to Problem 3.
+
+%\begin{algorithm}
+%\begin{algorithmic}[1]
+%\NoProc
+%\Procedure{SubSequence}{$S$, $S'$}  
+%\State $n = length(S)$
+%\State $m = length(S')$
+%\If{$m > n$}
+%\State \Return \texttt{`False'}
+%\EndIf
+%\If{$m == 0$}
+%\State \Return \texttt{`True'}
+%\EndIf
+%
+%
+%\State Let $M = array(n+1)$ 
+%\State $M[0] = 0$
+%\State $i = 1$
+%\State $j = 1$
+%\While{$i \leq n$ \textbf{and} $j \leq m$}
+%\If{$S[i] == S'[j]$}
+%\State $M[i] = M[i-1] + 1$
+%\State $i = i + 1$
+%\State $j = j + 1$
+%\ElsIf{$S[i] \neq S'[j]$}
+%\State $M[i] = M[i-1]$
+%\State $i = i + 1$  
+%\EndIf
+%\EndWhile
+%
+%\If{$M[n] == m$}
+%\State \Return \texttt{`True'}
+%\Else \ \Return \texttt{`False'}
+%\EndIf
+%\EndProcedure
+%\end{algorithmic}
+%\end{algorithm}
+
+
+%
+%\noindent
+%\underline{Running Time}:     \\
+%
+%
+%\noindent
+%\underline{Space}:   \\
+%
+%\noindent
+%\underline{Correctness}:  
+
+
+
+
+
+%% PROBLEM THREE
+\section*{Problem 3}
+$W.l.o.g.$, let $\{b_1, b_2, b_3, \dots, b_n\}$ be any of the $n!$ possible permutations of the $n$ bids, where index $i$ for bid $b_i$ indicates the order in which sellers place their bids. That is, bid $b_1$ is placed first, $b_2$ is placed second, and so on. 
+Have the seller accept the first highest bid \textit{after} bid $b_{\lceil \frac{n}{2} \rceil}$ has been placed.  That is,  for any $b_k \in \{b_{\lceil \frac{n}{2} \rceil+1},  b_{\lceil \frac{n}{2} \rceil+2}, \dots, b_n\}$ accept $b_k$ only if $b_k \geq \max\{b_1, b_2, \dots, b_{\lceil \frac{n}{2} \rceil}\}$.   \\
+
+\noindent
+\underline{Pseudocode}:
+\begin{algorithm}
+\begin{algorithmic}[1]
+\NoProc
+\Procedure{Auction}{$b_1, b_2, b_3, \dots, b_n$}:  
+\State Set $B = \{b_1, b_2, b_3, \dots, b_n\}$
+\For{$i = 1$ \textbf{to} $n$}
+\State Select $b_i \in B$ uniformly at random, without replacement
+\If{$i \leq \lceil \frac{n}{2} \rceil$}
+\State Reject $b_i$
+\ElsIf{$ i > \lceil \frac{n}{2} \rceil$}
+\If{$b_i \geq \max\{b_1, b_2, \dots, b_{\lceil \frac{n}{2} \rceil}\}$}
+\State Accept $b_i$
+\EndIf
+\EndIf
+\EndFor
+%\State \Return 
+\EndProcedure 
+\end{algorithmic}
+\end{algorithm}
+
+
+\noindent
+\underline{Running Time}:  The for-loop iterates exactly $n$ times and each of the operations within the for-loop require constant time. Therefore, the running time is $O(n)$.   \\
+
+\noindent
+\underline{Correctness}:   Let $b_{max} = \max\{b_1, b_2, \dots, b_{\lceil \frac{n}{2} \rceil}\}$.  If there exists a $b_k \in \{b_{\lceil \frac{n}{2} \rceil+1},  b_{\lceil \frac{n}{2} \rceil+2}, \dots, b_n\}$ such that $b_k \geq b^*$, $b_k$ is accepted.  The probability of such a $b_{max}$ existing in $\{b_1, b_2, \dots, b_{\lceil \frac{n}{2} \rceil}\}$ \textbf{and} a $b_k$ existing in $\{b_{\lceil \frac{n}{2} \rceil+1},  b_{\lceil \frac{n}{2} \rceil+2}, \dots, b_n\}$ is $$\frac{\left(\frac{n}{2} (\frac{n}{2} - 1)!\right)^2}{n!}  = \frac{n^2(\frac{n}{2} - 1)!(\frac{n}{2} - 1)!}{4n!} \geq \frac{n^2(n - 1)!(n - 1)!}{4n!} = \frac{n(n - 1)!}{4} \geq \frac{1}{4}  \ \ \ \  (\textrm{for } n\geq2)$$
+
+\noindent
+Thus,  The seller accepts the highest of the $n$ bids with a probability at least $1/4$, regardless of $n$. 
+
+
+%% PROBLEM FOUR
+\subsection*{Problem 4}
+Did not have time to complete. Move on to Problem 5.
+\begin{enumerate}[\bf (a)]
+
+\item 
+
+
+
+\item 
+
+\begin{enumerate}[i.]
+
+\item 
+
+\item 
+
+\item  
+\noindent
+\underline{Running Time}:      \\
+
+\noindent
+\underline{Correctness}:  
+
+\end{enumerate}
+\end{enumerate}
+
+%\noindent
+%\underline{Pseudocode}:
+%\begin{algorithm}
+%\begin{algorithmic}[1]
+%\NoProc
+%\Procedure{MinNumGuards}{$\{x_1, x_2, \dots, x_n\}$}    %\Comment{{\color{blue}  Returns guard positions \& \# of guards }}
+%\State $X = array(n)$
+%\For{$i=1$ \textbf{to} $n$}
+%\State $X[i] = x_i$
+%\EndFor
+%\State $guardPositions = $ \Call{MinGuardPlacement}{$X$} 
+%\State $minNumGuards = length(guardPositions)$
+%\State \Return $guardPositions$,  $minNumGuards$   \Comment{{\color{blue}  Returns positions and \# of guards }}
+%\EndProcedure \\
+%
+%
+%\Procedure{MinGuardPlacement}{$X$}  
+%\State $guard = [ \ ]$   \Comment{{\color{blue} Initialize empty array for guard positions. }}
+%\State $guard[1] = X[1] + 1$
+%\State $j = 1$    \Comment{{\color{blue}  $j$ used to used to iterate through each guard. }}
+%\For{$k=2$ \textbf{to} $n$}
+%\If{$X[k] > guard[j]+1$}
+%\State $guard[j+1] = X[k]+1$    \Comment{{\color{blue}  Place next guard at locally optimal position.}}
+%\State $j = j+1$  \Comment{{\color{blue}  Increment $j$ for next guard position. }}
+%\EndIf
+%\EndFor
+%\State \Return $guard$   \Comment{{\color{blue}  Returns guard positions }}
+%\EndProcedure
+%\end{algorithmic}
+%\end{algorithm}
+
+
+
+
+%% PROBLEM FIVE
+\section*{Problem 5}
+
+
+\begin{enumerate}[\bf (a)]
+
+\item  Suppose for a moment that the set $S$ is sorted.  Then the position of the median depends on whether the size of the set is odd or even. If $|S| = n$ is odd, the median is located at the mid-point of the sequence of elements in $S$. The position of the mid-point is the average of the position of the smallest element (i.e., the $1^{st}$ order statistic) and the position of the largest element (i.e., the $n^{th}$ order statistic).  That is, the position of the mid-point lies at $\frac{n+1}{2}$ when $|S| = n$.   If $|S| = n$ is even, the sequence of numbers in $S$ has no actual mid-point, so the median is computed by taking the average of the two middle values. In other words, the averages the values at position $\frac{n}{2}$ and the value at position $\frac{n}{2} +1$.   However, $S$ is not sorted, but since the algorithm computes the $k^{th}$ order statistic, we can use it to compute the median.  \\
+
+If $|S| = n$ is odd, we can compute the median by running the algorithm for the $\frac{n+1}{2}$-th smallest value: 
+$$\textrm{median}(S) \ = \ \texttt{k-th order statistic}\left(S, \frac{n+1}{2}\right)$$
+
+If $|S| = n$ is even, we can compute the median by calling the algorithm for the $\frac{n}{2}$-th smallest number and again for the $\left(\frac{n}{2} + 1\right)$-st smallest number, and then taking the mean of the two values:
+$$\textrm{median}(S) \ = \  \frac{1}{2}\left(  \texttt{k-th order statistic}\left(S, \frac{n}{2}\right)  \ + \ \texttt{k-th order statistic}\left(S, \frac{n}{2} + 1 \right)  \right)$$
+
+\item Using the hint, we will find upper bounds for the following:
+
+\begin{enumerate}[(i)]
+\item The expected time of \texttt{k-th order statistic} on a subproblem of type $j$, excluding the time spent on recursive calls, and 
+\item The expected time until an item $a_i$ is selected such that $1/4$ of the input can be thrown out, shrinking the input by a factor of $3/4$.
+\end{enumerate}
+
+\textit{Upper bound for (i):}
+For a subproblem of type $j$, the input size,  $N_j$,  is such that \\[0.3em]
+$n\left(\frac{3}{4}\right)^{j+1} < N_j < n\left(\frac{3}{4}\right)^j$.  The for-loop at lines $2-5$ iterates over the entire input,  \\[0.3em]
+everything else (excluding the recursive calls) requires constant time.  Therefore,  the expected time spent on the $j^{th}$ subproblem is $O\left(n\left(\frac{3}{4}\right)^j\right)$.  That is,  the expected time spent on the $j^{th}$ subproblem is at most (i.e., bounded above by) \ $c \cdot n\left(\frac{3}{4}\right)^j$, where $c$ is a constant. \\
+
+\noindent
+\textit{Upper bound for (ii):} Let $X_j$ be the random variable which denotes the time until $a_i$ is selected such that $1/4$ of the input can be thrown out in the $j^{th}$ subproblem.  The expected time to find an item $a_i$ such that $1/4$ of the input can be thrown out is then 
+$$\mathbb{E}\left[ X_j \right] = \sum_{k=0}^{\infty} k \cdot P\{X_j = k \} = \sum_{k=0}^{\infty} k \cdot (1 - p)^{k-1} p$$
+where $p$ denotes the probability of finding such an $a_i$ (i.e., the success probability).  Therefore,  $X_j$ is a geometric random variable.  Since $X_j$ is a geometric random variable, the expected time is simply $\frac{1}{p}$.  The success probability $p$ and the expected time are both computed below. \\
+
+\noindent
+If the algorithm throws out $1/4$ of the input in the $j^{th}$ subproblem,  it must be the case that either $1/4$ of the input is smaller than $a_i$ OR $1/4$ of the input is greater than $a_i$.   \\
+Let $A^-$ be the event $\{a_i > a_k : a_k \in S^- \textrm{ and } |S^-| = \left\lceil \frac{|S|}{4} \right\rceil \}$\\[0.3em]
+and $A^+$ be the event $\{a_i < a_k : a_k \in S^+ \textrm{ and } |S^+| = \left\lceil \frac{|S|}{4} \right\rceil \}$ \\[0.3em]
+Since $a_i$ is uniformly sampled from $S$ at random,  the probability of this event is: 
+$$P\left(A^- \cup A^+\right) \ = \ P\left(A^-\right) + P\left(A^+\right) \ = \ \frac{1}{4} + \frac{1}{4} \ = \  \frac{1}{2}$$
+Indeed,  $50\%$ of the elements of $S$ satisfy the conditions of such an $a_i$.  Therefore,  $p = \frac{1}{2}$.   \\[0.5em]
+Since $X_j$ is a geometric random variable, the expected time to find an item $a_i$ such \\[0.3em]
+that $1/4$ of the input can be thrown out is \ $\frac{1}{p} = \frac{1}{\sfrac{1}{2}} = 2$. 
+
+Putting it all together,  the expected running time for each subproblem (including the recursion) is bounded above by 
+$2cn\left(\frac{3}{4}\right)^j$.  Let $Y_j$ be the random variable denoting the running time for the $j^{th}$ subproblem (including the recursive calls).  Then $\mathbb{E}\left[ Y_j \right] \leq 2cn\left(\frac{3}{4}\right)^j$.  Then,  letting $Y$ be the $r.v. $ that denotes the running time of the entire algorithm and letting $M$ denote the number of subproblems,  we have $Y = \sum_{j=1}^{M} Y_j$. Therefore, the expected running time of the entire algorithm is such that
+
+\begin{align*}
+\mathbb{E}[Y] = \mathbb{E}\left[\sum_{i=0}^{M} Y_j \right] = \sum_{i=0}^{M} \mathbb{E}\left[ Y_j \right] \ &\leq \ \sum_{i=0}^{M} 2cn\left(\frac{3}{4}\right)^j \\[0.4em]
+& \leq \ \sum_{i=0}^{\infty} 2cn\left(\frac{3}{4}\right)^j \\[0.5em]  
+& = \  \frac{2cn}{1 - \frac{3}{4}}\\[0.5em] 
+&= \ 8cn \ = \ O(n)
+\end{align*}
+
+Therefore, the expected running time of the entire algorithm is $O(n)$.
+
+
+
+
+\end{enumerate}
+
+
+
+\end{document}
