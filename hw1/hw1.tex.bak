@@ -1,0 +1,333 @@
+\documentclass[twoside,11pt]{homework}
+
+\coursename{CSOR W4231 Analysis of Algorithms I - Spring 2021} 
+
+\studname{Joseph High}
+\studmail{jph2185}
+\hwNo{1}
+\date{\today} 
+
+% Uncomment the next line if you want to use \includegraphics.
+%\usepackage{graphicx}
+\usepackage{graphicx}
+%\usepackage{fancyhdr}
+\usepackage{enumerate}
+\usepackage{amsmath}
+\usepackage{xfrac}
+\usepackage{relsize}
+\usepackage{mathtools}
+\usepackage{xfrac}
+\usepackage{dsfont}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[makeroom]{cancel}
+\usepackage{collectbox}
+\usepackage{placeins}
+%\usepackage{cleveref}
+\usepackage{eqnarray}
+%\usepackage{titlesec} 
+\usepackage{bm} 
+\usepackage{bbm}
+\usepackage{hyperref}
+\usepackage{flafter}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{algorithm}
+%\usepackage{algorithmic}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{subfig}
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+
+\newcommand\NoDo{\renewcommand\algorithmicdo{}}
+\newcommand\ReDo{\renewcommand\algorithmicdo{\textbf{do}}}
+\newcommand\NoThen{\renewcommand\algorithmicthen{}}
+\newcommand\ReThen{\renewcommand\algorithmicthen{\textbf{then}}}
+\newcommand\NoEnd{\renewcommand\algorithmicend{}}
+\newcommand\NoFor{\renewcommand\algorithmicfor{}}
+\newcommand\NoProc{\renewcommand\algorithmicprocedure{}}
+\newcommand\NoIf{\renewcommand\algorithmicif{}}
+
+
+\newcommand{\commentsymbol}{{\color{blue} //}}% or \% or $\triangleright$
+\algrenewcommand\algorithmiccomment[1]{\hfill \commentsymbol{} #1}
+\makeatletter
+\newcommand{\LineComment}[2][\algorithmicindent]{\Statex \hspace{#1}\commentsymbol{} #2}
+\makeatother
+\newcommand{\varfont}{\texttt}
+
+\renewcommand*{\proofname}{Proof of Claim:}
+
+\begin{document}
+\maketitle
+
+%% PROBLEM ONE
+\section*{Problem 1}
+
+\begin{enumerate}[\bf (a)]
+
+%Problem 1a
+\item Since $N$ is an $n$-bit integer,  $N \cdot(N-1)$ is \textit{at most} a $2n$-bit integer,  $N\cdot (N-1)\cdot(N-2)$ a $3n$-bit integer,  $ \dots$,  $ N! = N \cdot(N-1)\cdot(N-2) \cdots 2\cdot1$ is \textit{at most} an $Nn$-bit integer.  At most, $N$ is the largest number in the range of $n$-bit values; in this case there are $2^n-1$  $ \ n$-bit terms in $N \cdot(N-1)\cdot(N-2) \cdots 2\cdot1$,  so the number of bits in $N!$ is $\Theta(Nn)$,  or $\Theta(n2^n)$.
+
+%Problem 1b
+\item %Algorithm to compute $N!$ is below
+\begin{algorithm}
+\caption{Compute $N!$}\label{factorial}
+\begin{algorithmic}[1]
+\NoProc
+\Procedure{Factorial}{$N$}
+   \State $N_{Fac} \gets 1$
+  \NoThen
+  \If{$N = 0$}:
+  \State $N_{Fac} = N_{Fac}$ 
+  \Else:
+   \NoDo
+   \For{$i=1$ \textbf{to} $N$}: 
+      \State $N_{Fac} = $ *i
+  \EndFor
+  \EndIf
+   \State \textbf{return} $N_{Fac}$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{Alternative algorithm to compute $N!$}\label{factorial}
+\begin{algorithmic}[1]
+\NoProc
+\Procedure{Fact}{$N$}
+%   \State $N_{Fac} = 1$
+  \NoThen
+  \If{$N \neq 0$}:
+  \State \Return $N*$\Call{Fact}{$N - 1$}
+  \Else:
+   \NoDo
+    \State \Return $1$
+  \EndIf
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+From part (a), it was determined that $N!$ is $N \cdot n$ bits long.  In each iteration of the for-loop, an $Nn$-bit integer is multiplied by an $n$-bit integer ($i$),  and there are a total of $N$ iterations in the for-loop. Therefore, the running time is $O(N^2n^2) = O((2^n)^2n^2) = O(4^nn^2)$.
+
+\underline{Correctness}: Base case $(N=1)$:  $N = 1$, so the for-loop iterates exactly once and $N_{Fac} = 1$.  Induction hypothesis: Now suppose that the algorithm returns $(N-1)!$ for all non-negative integers up to $N-1$. 
+\noindent
+For $N$ the algorithm computes $N*$\textsc{Fact}$(N-1)$.  By the induction hypothesis, \textsc{Fact}$(N-1)$ returns $(N-1)!$, and $N*(N-1)! = N!$.
+
+
+\end{enumerate}
+
+
+%% PROBLEM TWO
+\section*{Problem 2}
+
+\begin{enumerate}[\bf (a)]
+
+\item % Problem 2a
+\begin{enumerate}[i.]
+
+\item Because the tree is a representation of a comparison-based sorting algorithm, every path must lead to a possible order/sequence of any given set of numbers input into the algorithm. Since every leaf corresponds to a possible arrangement of the numbers, every permutation must appear in the tree. The algorithm must be able to generate all possible permutations of $n$ numbers to be correct. Suppose it was not the case that all permutations appeared in the tree.  That is, suppose some permutation $p = (\alpha(x_1), \alpha(x_2), \dots, \alpha(x_n))$ does not appear in the tree. Then for sets of numbers that follow the non-decreasing order in $p$, the algorithm either outputs an incorrect ordering or does not run to completion.
+
+\item In part (i), it was argued that every possible permutation of the $n$ numbers must appear as a leaf in the tree. Thus, the tree has at least $n!$ leaves.
+
+\item The maximum number of comparisons performed corresponds to the length of the longest (simple) path starting at the root node (i.e., the depth of the binary tree).  Indeed, at each node, exactly one comparison is performed, so the number of comparisons performed for a given path is equal to the number of edges traversed on that path. In other words, the maximum number of comparisons performed corresponds to the depth of the tree. 
+ 
+\item
+Let $L$ denote the set of all leaves in an arbitrarily chosen binary tree.
+
+\underline{Claim}: The maximum possible number of leaves occurs when \textit{every} leaf has the same depth. Furthermore,  $|L| \leq 2^d$.
+
+\begin{proof}
+Consider a binary tree where \textit{every} leaf has the same depth.  In such a tree,  every node at levels $ i \in \{0, 1, \dots,  d-1\}$ has exactly $2$ child nodes (i.e.,  two possibilities for every comparison).  Otherwise, all leaves would not have the same depth. This implies that each level $j \in \{1, \dots,  d\}$ has $2$ times the number of nodes as level $j-1$.  Level $1$ has $2$ nodes because level $0$ has one node (the root node), which has exactly $2$ child nodes. Since each node at level $1$ has two child nodes, level $2$ has $ \ 2 \cdot 2 = 2^2$ nodes. Similarly, level $3$ has $2 \cdot 2 \cdot 2 = 2^3$ nodes. Continuing in this way, level $j$ has $2^j$ nodes since every node at every level has two child nodes. Therefore,  bottom level (level $d$) has $2^d$ nodes, but the last level are the leaves. Therefore, there are $2^d$ leaves in a binary tree where all leaves have the same depth. 
+
+Clearly, this is the maximum number of leaves a binary tree of depth $d$ can possibly have. Indeed, consider a binary tree of depth $d$ where some leaf occurs at level $d-1$, but all other leaves occur at level $d$.  The number of leaves in such a tree is $2^d - 1$ since leaves do not have child nodes. The number of leaves decreases the further up the tree the leaf occurs. Therefore, the number of leaves in the tree is at most $2^d$. That is, $|L| \leq 2^d$
+\end{proof}
+
+\item In parts (i),  (ii) and (iv), it was argued that the number of leaves in the tree is at least $n!$ leaves and at most $2^d$.  We also know that $n! \leq n^n$. Putting this all together, we have the following:
+\begin{align*}
+2^d \geq |L| \geq n! \geq n^n \ \ & \Longleftrightarrow \ \ 2^d \geq n^n \\[0.6em]
+& \Longleftrightarrow \ \ d \log_2 2 \geq \log_2(n^n) \\[0.6em]
+& \Longleftrightarrow \ \ d \geq n\log_2(n) \\[0.6em]
+& \Longrightarrow \ \  d = \Omega(n\log n)
+\end{align*}
+From part (iii),  it was argued that the worst-case time complexity of the sorting algorithm corresponds to the depth $d$ of the tree. Therefore, a lower-bound for the worst-time complexity of a comparison-based sorting algorithm is $\Omega(n\log n)$.
+
+\end{enumerate}
+%End of Problem 2a
+
+\text{} \\ 
+
+(Parts (b) and (c) are on the following page.)
+
+\pagebreak
+
+%Problem 2b
+\item The proposed algorithm is inspired by the Counting Sort algorithm discussed in Chapter 8 of the course textbook.\footnote{Cormen, T.H.,  Leiserson, C.E., Rivest, R.L., \& Stein, C.  (2009). \textit{Introduction to Algorithms} (3rd ed.).  The MIT Press.}
+Given an array of integers $A[1, \dots, n]$ = $[x_1, \dots, x_n]$ of length $n$, define an array of zeros $K[1, \dots, D+1] = [0, 0, \dots, 0]$ of length $D+1$ where $D = \mathlarger{\max_i x_i - \min_i x_i}$.  The array $K$ will be used to store the counts of each integer in the input array $A$.  Define an array of the same length as $A$. Traverse the elements in $A$: for each value in $A$, locate the index in $K$ equal to the value in $A$ and increment the corresponding entry in $K$ by one. Next,  sum up array values with the value of the predecessor value.  Using the array $R$, map the values in $K$, according to the order in which they appear in $A$, with the corresponding indices in $K$, decrementing the values in $K$ by one in each iteration. The output is the sorted array.
+\begin{algorithm}
+\begin{algorithmic}
+\NoProc
+\Procedure{ArraySort}{$A$}
+   \State $n = length(A)$
+   \State $D= A.max - A.min$
+   \State $K = array(D+1)$   \Comment{{\color{blue} empty array of length $D+1$}}
+   \State $R = array(n)$  \Comment{{\color{blue} empty array of length equal to length of $A$}}
+   \NoDo
+   \For{$i = 1$ \textbf{to} $D+1$}:
+   \State $K[i] = 0$
+   \EndFor
+   \For{$i = 1$ \textbf{to} $n$}:
+   \State $K[A[i]] = K[A[i]] + 1$
+   \EndFor   
+   \For{$i = 1$ \textbf{to} $D+1$}:
+   \State $K[i]  = K[i] + K[i-1]$
+   \EndFor  
+   \For{$i = 0$ \textbf{to} $n$}:
+  \State $R[K[A[i]]] = A[i]$
+  \State $K[A[i]] \ = K[A[i]] - 1$
+   \EndFor 
+   %\State \textbf{return} $N_{Fac}$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+Running time:
+Let $T(n)$ denote the running time of the above algorithm.  Creating a zero matrix $K$ of length $D+1$ requires $O(D)$ time. Traversing the elements in $A$ and incrementing corresponding indices in $K$ by one requires $O(n)$ time.  Summing array values with the value of the predecessor value requires $O(D)$ time. Last, mapping the values in $K$ with the indices, requires $O(n)$ time.  Therefore,  $$T(n) = O(D) + O(n) + O(D) + O(n) = O(n + D)$$
+
+%Problem 2c
+\item If $D$ is on the order of $O(n)$, then the running time of the algorithm is $O(n)$. This contradicts the lower-bound $\Omega(n\log n)$ derived in part (a). Indeed, $n \neq \Omega(n\log n)$ and $n\log n \neq O(n)$.
+
+\end{enumerate}
+
+%% PROBLEM THREE
+\section*{Problem 3}
+
+
+\begin{center}
+\renewcommand{\arraystretch}{1.9}
+\begin{tabular}{|c|c|M{1cm}|M{1cm}|M{1cm}|M{1cm}|M{1cm}|}
+\hline
+$f$ & $g$ & $O$ & $o$ & $\Omega$ & $\omega$ & $\Theta$ \\ \hline
+$\log^2 n$ & $6\log n$ &  no & no & yes & yes & no \\ \hline
+$\sqrt{\log n}$ & $(\log \log n)^3$ & no & no & yes & yes & no \\ \hline
+$4n \log n$ & $n\log (4n)$ & yes & no & yes & no & yes \\ \hline
+$n^{3/5}$ &  $\sqrt{n}\log n$ & no  & no  & yes & yes & no \\ \hline
+$5\sqrt{n} + \log n $ & $2\sqrt{n}$ & yes & no  &  yes & no & yes  \\ \hline
+$n^5 4^n$ & $5^n$ & yes & yes & no & no  & no  \\ \hline 
+$\sqrt{n} 2^n$ & $2^{n/2 + \log n}$ & no & no & yes & yes & no  \\ \hline
+$n\log (2n)$ & $\frac{n^2}{\log n}$ & yes & yes & no & no & no \\ \hline
+$n!$ & $2^n$ & no & no & yes & yes & no \\ \hline
+$\log n!$ & $(\log n)^{\log n}$ & yes & yes & no & no & no  \\ 
+\hline
+\end{tabular}
+\end{center}
+
+
+%% PROBLEM FOUR
+\section*{Problem 4}
+We can use a divide and conquer approach to achieve a better running time than the\\[0.5em] ``straightforward algorithm".  In particular,  let $T(n)$ denote the running time of the algorithm\\[0.5em] we seek, and partition $\nu = \begin{bmatrix} \nu_1 & \nu_2 & \dotsb & \nu_n \end{bmatrix}^{\top}$ evenly into two vectors $\bm{\nu_1}$ and $\bm{\nu_2}$, both of\\[0.5em]
+length $\sfrac{n}{2}$,  such that $\bm{\nu_1}$ consists of the first $n/2$ components in $\nu$ and $\bm{\nu_2}$ consists of the last\\[0.5em] 
+$n/2$ components in $\nu$.  That is,  $$\nu =  \begin{bmatrix} \bm{\nu_1} & \bm{\nu_2} \end{bmatrix}^{\top} =  \begin{bmatrix} \smash{{\color{blue} \underbrace{\color{black} \begin{matrix} \nu_1 & \nu_2 & \dotsb & \nu_{\frac{n}{2}} \end{matrix}}_{ = \ \bm{\nu_1}}}} & \smash{{\color{blue} \underbrace{\color{black} \begin{matrix} \nu_{\frac{n}{2}+1} & \dotsb & \nu_n \end{matrix}}_{= \ \bm{\nu_2}}}} \end{bmatrix}^{\top}$$ \\
+
+\noindent
+Consider the following multiplication of the Hadamard matrix $H_k$ by $\nu$:
+$$H_k \nu = \begin{bmatrix} H_{k-1} & H_{k-1} \\ H_{k-1} & -H_{k-1} \end{bmatrix} \begin{bmatrix} \bm{\nu_1} \\ \bm{\nu_2} \end{bmatrix} \ = \  \begin{bmatrix} H_{k-1}\bm{\nu_1}  + H_{k-1}\bm{\nu_2} \\ H_{k-1}\bm{\nu_1}  - H_{k-1}\bm{\nu_2} \end{bmatrix} \ = \ \begin{bmatrix} H_{k-1} (\bm{\nu_1} + \bm{\nu_2}) \\ H_{k-1} (\bm{\nu_1} - \bm{\nu_2}) \end{bmatrix}$$
+
+\noindent
+The summation $\bm{\nu_1} + \bm{\nu_2}$ takes $O(n)$ time since there are $n/2$ entries to add.  By the same\\[0.5em] 
+argument, $\bm{\nu_1} - \bm{\nu_2}$ also takes $O(n)$ time.  Both multiplication operations,  $H_{k-1} (\bm{\nu_1} + \bm{\nu_2})$ and\\[0.5em] 
+$H_{k-1} (\bm{\nu_1} - \bm{\nu_2})$, require $T(n/2)$ time to execute, as these are the same recursion operations\\[0.5em] 
+of size $n/2$.  To summarize:
+
+\begin{enumerate}
+\item Compute $\bm{\nu_1} + \bm{\nu_2}$ and $\bm{\nu_1} - \bm{\nu_2}$
+\item Compute $H_{k-1} (\bm{\nu_1} + \bm{\nu_2})$
+\item Compute $H_{k-1} (\bm{\nu_1} - \bm{\nu_2})$
+\item Merge $H_{k-1} (\bm{\nu_1} + \bm{\nu_2})$ and $H_{k-1} (\bm{\nu_1} - \bm{\nu_2})$ into vector
+\end{enumerate}
+Pseudocode:
+\begin{algorithm}
+\caption{Compute $H_k \nu$}\label{matrixmultiply}
+\begin{algorithmic}[1]
+\NoProc
+\Procedure{MatrixVectorMultiply}{$H_k$ ,  $\nu$}
+   \State $\nu_1 = \nu[1, n/2]$
+   \State $\nu_2 = \nu[n/2 + 1, n]$
+   \State $[[H_{k-1}, H_{k-1}], [H_{k-1}, H_{k-1}]] = Partition(H_k,  \ blocks = 4,  \ size = (n/2 \times n/2))$
+   
+   \State $Top = $ \Call{MatrixVectorMultiply}{$H_{k-1}$ ,  $\nu_1 + \nu_2$}
+   \State $Bottom = $ \Call{MatrixVectorMultiply}{$H_{k-1}$ ,  $\nu_1 - \nu_2$}
+   \State $Product = [Top, Bottom]$ \Comment{{\color{blue}Merge top and bottom into column vector}}
+   \State \Return \Call{MatrixVectorMultiply}{$H_{k-1}$ ,  $\nu_1 + \nu_2$}
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\noindent
+which has a running time of $ \ T(n) = 2T(n/2) + O(n) \ = \ 2T(n/2) + cn $. \\[0.6em]
+By the Master Theorem, $a = 2, \ b = 2,  \ k = 1 \Longrightarrow \ T(n) = O(n \log n)$ \\[0.6em] which is significantly better than $O(n^2)$.\\
+
+\noindent
+Correctness: Induction on $k$
+
+\noindent
+Base Case ($k=0$): The dimension of $H_0$ is $1 \times 1$ and the length of $\nu$ is $1$. Therefore, there is nothing to partition and the product $H_0 \nu$ a scalar multiple, which returns the $1 \times 1$ vector $[H_0 \nu]$.
+
+\noindent
+Induction Hypothesis: Assume \textsc{MatrixVectorMultiply}$(H_i ,  \nu)$ returns the correct matrix-vector product for $i \in \{1, \dots, k-1\}$. \\
+
+\noindent
+Induction Step: For $n = 2^k$, consider the following multiplication of the Hadamard matrix $H_k$ by $\nu$:
+$$H_k \nu = \begin{bmatrix} H_{k-1} & H_{k-1} \\ H_{k-1} & -H_{k-1} \end{bmatrix} \begin{bmatrix} \bm{\nu_1} \\ \bm{\nu_2} \end{bmatrix} \ = \  \begin{bmatrix} H_{k-1}\bm{\nu_1}  + H_{k-1}\bm{\nu_2} \\ H_{k-1}\bm{\nu_1}  - H_{k-1}\bm{\nu_2} \end{bmatrix} \ = \ \begin{bmatrix} H_{k-1} (\bm{\nu_1} + \bm{\nu_2}) \\ H_{k-1} (\bm{\nu_1} - \bm{\nu_2}) \end{bmatrix}$$
+
+\noindent
+By the induction hypothesis, 
+\textsc{MatrixVectorMultiply}$(H_{k-1} ,  \bm{\nu_1})$ and \textsc{MatrixVectorMultiply}$(H_{k-1} ,  \bm{\nu_2})$ return the correct matrix-vector products $H_{k-1}\bm{\nu_1}$ and $\ H_{k-1}\bm{\nu_2} $, respectively. Then
+\textsc{MatrixVectorMultiply}$(H_{k-1} ,  \bm{\nu_1} + \bm{\nu_2})$ and \textsc{MatrixVectorMultiply}$(H_{k-1} ,  \bm{\nu_1} - \bm{\nu_2})$ both return the correct matrix-vector products $H_{k-1} (\bm{\nu_1} + \bm{\nu_2})$ and $H_{k-1} (\bm{\nu_1} - \bm{\nu_2})$, respectively.  Therefore, the algorithm returns the correct matrix-vector product for all values up to $k$. Indeed,  \textsc{MatrixVectorMultiply}$(H_k ,  \nu)$ merges the two products such that \textsc{MatrixVectorMultiply}$(H_{k-1} ,  \bm{\nu_1} + \bm{\nu_2})$ is stored in the first $n/2$ entries and the output from \textsc{MatrixVectorMultiply}$(H_{k-1} ,  \bm{\nu_1} - \bm{\nu_2})$ is stored in last $n/2$, and by the induction hypothesis, each of these were computed correctly. 
+
+
+
+%The proposed algorithm computes the matrix-vector product using a divide and conquer approach. In particular, it recursively partitions the matrix evenly into four block matrices (even since dimension of matrix is even), splits the vector evenly, since the initial vector is of length $2^k$, and then subsequently calls itself to compute the matrix-vector product of each smaller input. It computes the  product in the usual way, but does so on the smaller inputs until it reaches $H_0$ and a vector of length $1$ where $H_0 \nu$ is just scalar multiplication. \\
+
+%% PROBLEM FIVE
+\section*{Problem 5}
+Initialize at the root node, which we will denote by $s$.  Probe both child nodes, $c_1$ and $c_2$, of $s$ and compare $x_s$ to both $\mathlarger{x_{c_1}}$ and $\mathlarger{x_{c_2}}$. If $x_s < \mathlarger{x_{c_1}}$ and $x_s < \mathlarger{x_{c_2}}$, then $s$ is a local minimum: Return $s$. Else, choose the child node with the smaller label; indeed, since all labels are distinct, one label must be strictly less than the other. Let $u$ denote the node with the minimum label. Next, we repeat the steps noted above.  In particular, probe both child nodes, $v_1$ and $v_2$, of $u$. If $x_u < \mathlarger{x_{v_1}}$ and $x_u < \mathlarger{x_{v_2}}$, then $u$ is a local minimum. Indeed, $x_u$ is smaller than the label of its parent node and smaller than the labels of both its children nodes.  Return $u$. Otherwise, choose the child node with the smaller label. Repeat until a local minimum is identified. \\
+
+\noindent
+\underline{Pseudocode}:
+\begin{algorithm}
+\caption{Find local minimum $v* \in V$ for binary tree $T = (V, E)$}\label{localmin}
+\begin{algorithmic}[1]
+\State $V_{probed} = \{ \}$ \Comment{{\color{blue}\small Storage for set of vertices which have already been probed}}
+\State $E_{probed} = \{ \}$ \Comment{{\color{blue}\small Storage for set of edges which have already been traversed}}
+\State $s = v.root$  \Comment{{\color{blue}\small Define $s$ to be the root node}} \\
+\NoProc
+\Procedure{LocalMinimum}{$T = (V, E)$ ,  $s \in V$}
+   \State Probe $s$
+   \NoDo
+   \For{children nodes $u_1,  u_2$ of $s$}:
+   \State Probe $u_1$
+   \State Probe $u_2$
+   \If{($x_s < x_{u_1}$) and ($x_s < x_{u_2}$)}:
+   \State \Return $s$
+   \Else:
+   \NoDo
+   \State $v = \argmin\{x_{u_1} ,  x_{u_2}\}$ \Comment{{\color{blue}\small Define child node with smaller label}}
+   \State $V_{probed} = V_{probed} \cup \{s, \ \argmax\{x_{u_1}, x_{u_2}\}\}$
+   \State $E_{probed} = E_{probed} \cup \{(s, \ \argmax\{x_{u_1}, x_{u_2}\})\}$ 
+   \State $V' = V \setminus V_{probed}$ \Comment{{\color{blue}\small Vertices in $T$ that have not yet been probed}}
+   \State $E' = V \setminus E_{probed}$ \Comment{{\color{blue}\small Edges in $T$ that have not yet been traversed}}
+   \State $T' = (V', E')$  
+   \State \Return \Call{LocalMinimum}{$T' = (V', E')$ ,  $v$}
+   \EndIf
+   \EndFor
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\noindent
+\underline{Running time}: Let $T(n)$ denote the running time of Algorithm \ref{localmin}. The algorithm iterates\\[0.3em] 
+\textit{at most} $n/2$ times since only one half of the tree is considered after the root node. This requires $T(n/2)$ time.  Probing the root node before for-loop requires constant time $O(1)$.  Therefore, the running time is $T(n) = T(n/2) + 2O(1) = T(n/2) + c$.  By the Master Theorem, with $a = 1$, $b=2$, and $k=0$:  $$T(n) = O(n^0 \log n) = O(\log n)$$ 
+\noindent
+Correctness is argued in the discussion above the algorithm.
+
+\end{document} 
