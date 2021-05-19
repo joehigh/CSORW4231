@@ -1,0 +1,138 @@
+\documentclass[twoside,11pt]{homework}
+
+\coursename{CSOR W4231 Analysis of Algorithms - Spring 2021} 
+
+\studname{Joseph High}
+\studmail{jph2185}
+\hwNo{5}
+\date{\today} 
+
+% Uncomment the next line if you want to use \includegraphics.
+%\usepackage{graphicx}
+\usepackage{graphicx}
+%\usepackage{fancyhdr}
+\usepackage{enumerate}
+\usepackage{amsmath}
+\usepackage{xfrac}
+\usepackage{relsize}
+\usepackage{mathtools}
+\usepackage{xfrac}
+\usepackage{dsfont}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[makeroom]{cancel}
+\renewcommand{\CancelColor}{\color{red}}
+\usepackage{collectbox}
+\usepackage{placeins}
+%\usepackage{cleveref}
+\usepackage{eqnarray}
+%\usepackage{titlesec} 
+\usepackage{bm} 
+\usepackage{bbm}
+\usepackage{hyperref}
+\usepackage{flafter}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{algorithm}
+%\usepackage{algorithmic}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{subfig}
+\usepackage{soul}
+
+\algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+
+\algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
+
+\newcommand\NoDo{\renewcommand\algorithmicdo{}}
+\newcommand\ReDo{\renewcommand\algorithmicdo{\textbf{do}}}
+\newcommand\NoThen{\renewcommand\algorithmicthen{}}
+\newcommand\ReThen{\renewcommand\algorithmicthen{\textbf{then}}}
+\newcommand\NoEnd{\renewcommand\algorithmicend{}}
+\newcommand\NoFor{\renewcommand\algorithmicfor{}}
+\newcommand\NoProc{\renewcommand\algorithmicprocedure{}}
+\newcommand\NoIf{\renewcommand\algorithmicif{}}
+
+
+
+\newcommand{\commentsymbol}{{\color{blue} //}}% or \% or $\triangleright$
+\algrenewcommand\algorithmiccomment[1]{\hfill \commentsymbol{} #1}
+\makeatletter
+\newcommand{\LineComment}[2][\algorithmicindent]{\Statex \hspace{#1}\commentsymbol{} #2}
+\makeatother
+\newcommand{\varfont}{\texttt}
+
+%\makeatletter
+%\algrenewcommand\ALG@beginalgorithmic{\ttfamily}
+%\makeatother
+
+\algrenewcommand\textproc{\texttt}
+%\renewcommand*{\proofname}{Proof of Claim:}
+
+\begin{document}
+\maketitle
+
+%% PROBLEM ONE
+\subsection*{Problem 1}
+
+\begin{enumerate}[\bf i.]
+
+\item From the conditions provided in the problem, each node $v \in V$ must satisfy the following demand constraint:
+$$ f^{\textrm{in}}(v) - f^{\textrm{out}}(v) = d(v)$$ 
+
+By the flow conservation condition for feasible flows: \ $\mathlarger{\sum_{v \in V} f^{\textrm{in}}(v) = \sum_{v \in V} f^{\textrm{out}}(v)}$ \\[0.4em]
+$ \Longrightarrow \ \ \mathlarger{\sum_{v \in V} f^{\textrm{in}}(v) - \sum_{v \in V} f^{\textrm{out}}(v) = 0}$ \\[0.4em]
+
+We then have that
+
+$$ \sum_{v \in V} d(v) \ = \ \sum_{v \in V} f^{\textrm{in}}(v) - f^{\textrm{out}}(v) \ = \ \sum_{v \in V} f^{\textrm{in}}(v) - \sum_{v \in V} f^{\textrm{out}}(v) \ = \ 0 $$
+
+\begin{align*}
+& \Longrightarrow \ \  \sum_{v \in V} d(v) = 0 \\[0.4em]
+& \Longrightarrow \ \  \sum_{v \in V} d(v) = \underbrace{\sum_{d(v) > 0} d(v)}_{=\sum_{v\in T} d(v)} \ + \ \underbrace{\sum_{d(v) < 0} d(v)}_{=\sum_{v\in S} d(v)} \ + \ \underbrace{\sum_{d(v) = 0} d(v)}_{=0 \ (\forall v \in V \setminus S \cup T)} = 0 \\[0.7em]
+& \Longrightarrow \ \ \sum_{v \in T} d(v) + \sum_{v \in S} d(v)  +  \cancelto{0}{\sum_{v \in V \setminus S \cup T} d(v)} = 0 \\[0.5em]
+& \Longrightarrow \ \ \sum_{v \in T} d(v) + \sum_{v \in S} d(v) = 0 \\[0.5em]
+& \Longrightarrow \ \ \sum_{v \in T} d(v) \ = \ - \sum_{v \in S} d(v)
+\end{align*}
+
+Hence, a necessary condition for a feasible circulation with demands to exist is 
+$$\sum_{v \in T} d(v) \ = \ - \sum_{v \in S} d(v) \ \ \ \ \   \textrm{and/or} \ \ \ \ \ \   \sum_{v \in V} d(v) = 0$$ 
+
+Furthermore,  the demand at nodes in $S$ or $T$ must not exceed the capacity of the edges leaving or entering the nodes in $S$ or $T$, respectively.   However, this condition is captured by the combination of the capacity constraints and the demand constraints. 
+%That is,  for each $ v \in T, \ \ d(v) \leq \mathlarger{\sum_{(v, u) \textrm{ entering } v \in T} c_{(v, u)}}$ \\ and for each $ v \in S,  \ \ d(v) \leq \mathlarger{\sum_{(v, u) \textrm{ leaving } v \in S} c_{(v, u)}}$
+
+\item Let $G = (V, E)$ be the flow network given in the problem.  From $G$, construct a new network  $G' = (V', E')$ where $V' = V \cup \{s, t\}$ and $E' = E \cup E_{N}$.  The node $s$ is a new, additional source node in $G'$ and $t$ is a new,  additional sink in $G'$.  The new set of edges $E_{N}$ is a set of directed edges from $s$ to all nodes in the set $S$ and directed edges from all nodes in $T$ to $t$.  That is,  $E_{N} = \{(s, v),  (u, t) : v \in S \textrm{ and } u \in T\}$.  For each $(u, t) \in E_{N}$, with  $u \in T$,  assign a capacity $c_{(u, t)} = d(u)$.  For each $(s, v) \in E_{N}$,  with $v \in S$,  assign a capacity $c_{(s, v)} = -d(v)$,  since $d(v) < 0$ for all $v \in S$ and capacities must be positive.  
+
+For any feasible circulation in $G$, the maximum flow can be achieved in $G'$ by assigning a flow value $f(u, t) = c_{(u, t)} = d(u)$ for all $ (u, t) \in E_{N} $ and $u \in T$, and a flow value $f(s, v) = c_{(s, v)} = -d(v)$ for all $(s, v) \in E_{N}$ and $v \in S$.  That is, assign flow values equal to the capacity of the corresponding edge.  Then clearly, the max flow value will be $\mathlarger{\sum_{v \in T} d(v)}$.  On the other hand, if the max flow is $\mathlarger{\sum_{v \in T} d(v)}$ in $G'$,  then this implies that every $e \in E_{N}$ is fully saturated at capacity (i.e., $f(e) = c_e$), which gives a feasible  solution to the max flow problem on the original network $G$, and thus a feasible circulation in $G$.
+
+\end{enumerate}
+
+
+%% PROBLEM TWO
+\subsection*{Problem 2}
+
+
+
+
+
+%% PROBLEM THREE
+\subsection*{Problem 3}
+
+
+
+
+
+%% PROBLEM FOUR
+\subsection*{Problem 4}
+
+
+
+
+
+%% PROBLEM FIVE
+\subsection*{Problem 5}
+
+
+
+
+\end{document}
