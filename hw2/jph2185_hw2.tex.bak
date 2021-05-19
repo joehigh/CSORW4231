@@ -1,0 +1,363 @@
+\documentclass[twoside,11pt]{homework}
+
+\coursename{CSOR W4231 Analysis of Algorithms I - Spring 2021} 
+
+\studname{Joseph High}
+\studmail{jph2185}
+\hwNo{2}
+\date{\today} 
+
+% Uncomment the next line if you want to use \includegraphics.
+%\usepackage{graphicx}
+\usepackage{graphicx}
+%\usepackage{fancyhdr}
+\usepackage{enumerate}
+\usepackage{amsmath}
+\usepackage{xfrac}
+\usepackage{relsize}
+\usepackage{mathtools}
+\usepackage{xfrac}
+\usepackage{dsfont}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[makeroom]{cancel}
+\usepackage{collectbox}
+\usepackage{placeins}
+%\usepackage{cleveref}
+\usepackage{eqnarray}
+%\usepackage{titlesec} 
+\usepackage{bm} 
+\usepackage{bbm}
+\usepackage{hyperref}
+\usepackage{flafter}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{algorithm}
+%\usepackage{algorithmic}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{subfig}
+
+\algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+
+\algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
+
+\newcommand\NoDo{\renewcommand\algorithmicdo{}}
+\newcommand\ReDo{\renewcommand\algorithmicdo{\textbf{do}}}
+\newcommand\NoThen{\renewcommand\algorithmicthen{}}
+\newcommand\ReThen{\renewcommand\algorithmicthen{\textbf{then}}}
+\newcommand\NoEnd{\renewcommand\algorithmicend{}}
+\newcommand\NoFor{\renewcommand\algorithmicfor{}}
+\newcommand\NoProc{\renewcommand\algorithmicprocedure{}}
+\newcommand\NoIf{\renewcommand\algorithmicif{}}
+
+
+
+\newcommand{\commentsymbol}{{\color{blue} //}}% or \% or $\triangleright$
+\algrenewcommand\algorithmiccomment[1]{\hfill \commentsymbol{} #1}
+\makeatletter
+\newcommand{\LineComment}[2][\algorithmicindent]{\Statex \hspace{#1}\commentsymbol{} #2}
+\makeatother
+\newcommand{\varfont}{\texttt}
+
+%\renewcommand*{\proofname}{Proof of Claim:}
+
+\begin{document}
+\maketitle
+
+%% PROBLEM ONE
+\section*{Problem 1}
+Construct a modified BFS algorithm on $G$ starting from the node $s$ such that the algorithm records the number of nodes in each layer.  Search for a layer at level $k \in \{1,  \dots n/2\}$ with exactly one node.  Return the node contained within this layer. \\
+
+
+\noindent
+\underline{Pseudocode}:
+\begin{algorithm}
+%\caption{Find $v$ such that deleting $v$ destroys all $s-t$ paths, where $dist(s, t) > n/2$}\label{searchanddestroy}
+\begin{algorithmic}[1]
+\NoProc
+\Procedure{SearchAndDestroy}{$G,  s$}
+%   \State $L = $ \Call{BFS-Modified}{$G,s, t$}
+%   \For{$i = 1$ \textbf{to} $n/2$}:
+%   \If{$length(L[i]) == 1$}:
+%   \State $v = L[i][0]$
+%   \State \textbf{break}
+%   \EndIf
+%   \EndFor
+   \State $BFS = $ \Call{BFS-Modified}{$G,s$}
+   \For{$u \in G$}:
+   \If{$BFS.dist[u] < n/2$ \textbf{and} $u.length(L[i]) == 1$}:
+   \State $v = u$
+   \State \textbf{break}
+   \EndIf
+   \EndFor
+   \State \Return $v$
+\EndProcedure \\
+
+\Procedure{BFS-Modified}{$G = (V, E)$,  $s$}  \Comment{{\color{blue} Only the modified portion shown}} \\
+ {\color{gray} //Add the following above the while-loop in the original BFS pseudocode}
+ \State $n = size(V)$   \Comment{{\color{blue} Define number of nodes in $G$. Running time: $O(1)$}}
+  \State $L = [  \ ]$  \Comment{{\color{blue} Initialize array for each layer. Running time: $O(n)$}}
+   \State $L[0] = s$ \\
+  \\
+  {\color{gray} //Add the following to the while-loop \& above the for-loop in the BFS pseudocode}
+  \For{$i = 1$ \textbf{to} $length(L)$}:
+  \State $L[i] = G.neighbor[u]$  \Comment{{\color{blue} Store all neighbors of $u$ in layer $L_i$}}
+  \EndFor
+   \State \Return $L$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\noindent
+\underline{Running Time}: \ The for-loop in the \textsc{SearchAndDestroy} function iterates at most $n/2$ times, so it has a running time of $O(n)$. The modification to the BFS algorithm requires $O(m)$ time., and the original BFS algorithm has a running time of $O(n + m)$.  Therefore, the total running time is  $$O(n+m) + O(n) + O(m) =  O(n + m)$$
+
+\noindent
+\underline{Correctness}:\\
+There must exist at least one layer $L_k$ for $k \in \{1, \dots,  n/2\}$ that excludes $s$ and $t$ which contains exactly one node.  Indeed, $s$ is in layer $L_0$ and, by the supposition, $t$ is contained in layer $L_{\delta}$ for some $\delta = dist(s, t) > n/2$. Since the distance between $s$ and $t$ is strictly greater than $n/2$, then at least one layer must contain exactly one node.  Indeed, if each of these layers contained $c > 1$ nodes, then the number of nodes in the union of these layers would exceed the number of nodes in $G$.  That is,  \ $c*(n/2) \geq n = |V|$,  which is a contradiction.  
+
+%% PROBLEM TWO
+\section*{Problem 2}
+If $G$ contains a vertex from which all other vertices in $G$ can be reached, then such a vertex must lie in a source SCC (see correctness argument for proof).  Based on this, we can  run the depth-first-search (DFS) algorithm on $G$ from any vertex to find a source node, which must lie in a source SCC.  In particular, run DFS and compute the finish times for each node. The node with the largest finish time is the source node. Next, run BFS from the node with the largest finish time, recording which nodes have been discovered/explored.  If all nodes are explored in BFS, this implies that all nodes are reachable from this node. In this case, return `True' (i.e., there exists a node in $G$ from which all other nodes can be reached). Otherwise, return `False'  (i.e., such a node does not exist in $G$).  \\
+
+
+\noindent
+\underline{Pseudocode}:
+\begin{algorithm}
+\begin{algorithmic}[1]
+\NoProc
+\Procedure{Q2\_Algorithm}{$G = (V, E)$}  
+\State Run \texttt{DFS}$(G)$;  compute $finish(u)$ for all $u \in V$.   \Comment{{\color{blue}  $O(n + m)$}}
+\State Compute $\max_{u \in V} finish(u)$, and   \Comment{{\color{blue}  $O(n)$}}
+\item[]  \ \ \ \ \ \ \ \ \ define $v^* = \max_{u \in V} finish(u)$ 
+\State Run \texttt{BFS}$(G, v^*)$;  record all vertices explored in BFS \Comment{{\color{blue} $O(n + m)$}}
+\State Output all vertices discovered in BFS, and 
+\item[]  \ \ \ \ \ \ \ \ \ define $V_{BFS} = \{w \in V : w$ discovered in \texttt{BFS}$(G, v^*) \}$
+\NoThen
+ \If{$size(V_{BFS}) \texttt{ == } size(V)$}:
+\State \Return \texttt{`True'}
+\Else: 
+\State \Return \texttt{`False'}
+\EndIf
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\noindent
+\underline{Running Time}: \  Running DFS on $G = (V, E)$ with $|V| = n$ and $|E| = m$ requires a run-time of $O(n + m)$. Computing the maximum finish time in the second step requires $O(n)$ time.  The call to BFS in the third step requires $O(n + m)$ time. Storing the all explored vertices from BFS requires $O(n)$ time. Therefore, the total running time is 
+$$ O(n + m) + O(n) + O(n + m) + O(n) = O(n + m)$$
+
+\noindent
+\underline{Correctness}: We first show that running DFS to find the node with the max finish time is correct.  \\
+Claim: If $G$ contains a vertex from which all other vertices in $G$ can be reached, then such a vertex must lie in a source SCC.   \\
+Let $SCC_{source}$ be a source SCC in the metagraph of $G$, and consider a node $s \in SCC_{source}$. Now,  suppose to the contrary; that is, suppose $\exists \ v \neq s$ from which all other nodes in $V$ are reachable,  and that $v \notin SCC_{source}$. In this case, there must exist at least one edge entering a node that lies in $SCC_{source}$ since there is a path from $v$ to all nodes in $V$. However, this implies that $v$ has a larger finish time than $s$ and that $SCC_{source}$ does not have the max finish time, a contradiction.   Therefore, $v \in SCC_{source}$. Now, since $s$ and $v$ are in the same SCC, there must exist a path path from $s$ to $v$ and a path from $v$ to $s$ within $SCC_{source}$, by definition of strongly connected components. Then since $v$ can reach all other nodes in $V$, so can $s$.  \\
+\noindent
+(Correctness of running \texttt{BFS}$(G, v^*)$) By Theorem 22.5 in the course textbook\footnote{Cormen, T.H.,  Leiserson, C.E., Rivest, R.L., \& Stein, C.  (2009). \textit{Introduction to Algorithms} (3rd ed.).  The MIT Press.}, when BFS is run on undirected or directed graphs from a given source vertex $s \in V$,  BFS discovers every vertex $v \in V$ that is reachable from the source $s$.   \\
+
+
+\noindent
+\textit{Alternative Approach}:\\
+Alternatively, we can run DFS from the node with the largest finish time, recording the number of DFS trees are in the output. If the second run of DFS from the node with the max finish time returns only one tree,  this implies that all nodes are reachable from this node.  That is, if DFS discovers all nodes in one exploration, then all nodes are reachable from the node with the largest finish time.  In this case, return `True' (i.e., there exists a node in $G$ from which all other nodes can be reached). Otherwise, return `False'  (i.e., such a node does not exist in $G$).  \\
+
+\noindent
+\underline{Pseudocode for alternative approach}:
+\begin{algorithm}
+\begin{algorithmic}[1]
+\NoProc
+\Procedure{Q2\_Algorithm}{$G = (V, E)$}  
+\State Run \texttt{DFS}$(G)$;  compute $finish(u)$ for all $u \in V$.   \Comment{{\color{blue}  $O(n + m)$}}
+\State Compute $\max_{u \in V} finish(u)$, and   \Comment{{\color{blue}  $O(n)$}}
+\item[]  \ \ \ \ \ \ \ \ \ define $v^* = \max_{u \in V} finish(u)$ 
+\State Run \texttt{DFS}$(G, v^*)$  \Comment{{\color{blue} $O(n + m)$}}
+\If{$\forall \ v$ discovered in one tree/exploration}:
+\State \Return \texttt{`True'}
+\Else: 
+\State \Return \texttt{`False'}
+\EndIf
+   \State \Return
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+
+%% PROBLEM THREE
+\section*{Problem 3}
+Because $G$ is a directed acyclic graph (DAG), then G has a topological ordering.  Apply the topological sort algorithm on $G$ to obtain the topological ordering of the vertices in $G$. Consider only the nodes between $s$ and $t$, inclusive (i.e., $s,  v_1,  v_2,  \dots,  v_k,  t$).   Traverse the nodes in the list between nodes $s$ and $t$, inclusive (i.e., $s,  v_1,  v_2,  \dots,  v_k,  t$).   Then recursively sum the number of paths from $s$ to $t$.  When the node recursion reaches $t$, the algorithm will add $1$ to the count.  If there is a node between $s$ and $t$ that has no outgoing edges, then it adds nothing to the count.  \\
+
+
+%\noindent
+%\underline{Pseudocode}:
+\begin{algorithm}
+\begin{algorithmic}[1]
+\NoProc
+\Procedure{PathCounter}{$G = (V, E), s, t$}  
+\State Run \texttt{Topological-Sort}$(G)$, and  \Comment{{\color{blue}  $O(n + m)$}}
+\item[]  \ \ \ \ \ \ \ \ \ output the linked list of vertices between $s$ and $t$, inclusive.  
+%\State Let $L = $ the linked list of vertices from \texttt{Topological-Sort}$(G)$, 
+%\item[]  \ \ \ \ \ \ \ \ \ excluding all nodes to the left of $s$ and to the right of $t$.
+\State Define $s, v_1, \dots , v_{k-1}, t $ as the nodes output by \texttt{Topological-Sort}$(G)$,  \Comment{{\color{blue}  $O(n)$}}
+\item[]  \ \ \ \ \ \ \ \ \ excluding all nodes to the left of $s$ and to the right of $t$.
+\State $count = 0$   \Comment{{\color{blue}  $O(1)$}}
+\NoThen
+ \If{$s == t$}:    \Comment{{\color{blue}  $O(1)$}}
+\State $count = 1$     \Comment{{\color{blue}  $O(1)$}}
+\ElsIf{$G.Adj[s] = \emptyset$}:  \Comment{{\color{blue}  $O(1)$}}
+\State $count = count$     \Comment{{\color{blue}  $O(1)$}}
+\Else: 
+\For{all $u \in G.Adj[s]$}:  \Comment{{\color{blue}  $O(m)$}}
+\State $count = count \ +$ \Call{PathCounter}{$G,u, t$}
+\EndFor
+\EndIf
+\State \Return $count$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+
+\noindent
+\underline{Running Time}: \  Running topological sort on $G$ requires a run-time of $O(n + m)$.  The for-loop iterates $outdeg(u)$ times for each $u \in G.Adj[v]$.  Then for all vertices between $s$ and $t$, inclusive, the for-loop iterates $O(m)$ times.  Therefore, the total running time is \\
+$O(n + m) + O(n) + O(m) = O(n + m)$ \\
+
+\noindent
+\underline{Correctness}: Induct on the number of paths from $s$ to $t$. \\
+Base Case (No paths from $s$ to $t$): The algorithm starts with a count of zero. Since there are no paths from $s$ to $t$, the algorithm returns a count of $0$, the desired output.  \\
+Induction Hypothesis: Suppose there are a total of $k$ paths from $s$ to $t$.  Further suppose that the algorithm correctly computes the number of paths to be $k$. \\
+Induction Step:  Suppose there are a total of $k + 1$ distinct $s-t$ paths.  Let $p$ be one of the $k+1$ paths such that $p$ contains nodes and edges that overlap with nodes and edges of other distinct paths.  Such a path must exist.  Now consider all $s-t$ paths but $p$; there are $k$ of them.  From the induction hypothesis, the algorithm will enumerate the $k$ paths correctly.  Now, because $p$ overlaps with other paths already computed by the algorithm and part of the recurision, then this path will be counted as well.  A count of $k+1$ paths is returned.
+
+
+%% PROBLEM FOUR
+\section*{Problem 4}
+Let $(b_1, b_2)$ represent the state of the two bottles, where $b_1$ and $b_2$ are the number of liters contained in the first and second bottle,  respectively,  in the given state.  We are given an initial state of $(x, y)$.  
+\noindent
+Run BFS from the initial state node $(x, y)$ and generate the BFS tree using each of the admissible operations of \textbf{FILLUP(i)},  \textbf{EMPTY(i)}, and \textbf{POUR(i, j)}. At each subsequent leaf node in the BFS tree, apply the operations again. Repeat until one of the bottles has exactly $A$ liters. That is, repeat until the state is either $(A, b_2)$ or $(b_1, A)$, for any $b_1$ and $b_2$. \\ 
+
+\noindent
+\textbf{Pseudocode provided on the next page.  It's too long to fit on this page. }\\ 
+
+\begin{algorithm}
+\begin{algorithmic}[1]
+\NoProc
+\Procedure{BottleFillSearch}{$ X,  Y,  x,  y,  A $}  
+\State $V_{\mathcal{S}} = $ \Call{StateSpace}{$ X,  Y,  x,  y,  A $}  
+\State $E = \{(V_{\mathcal{S}}[k-1], V_{\mathcal{S}}[k]) : \ \forall \ k \}$
+%\State $G = (V_{\mathcal{S}}, E)$
+\Do
+\State Run \texttt{BFS}$(G = (V_{\mathcal{S}},  E),   (x, y))$
+\doWhile{$(A, y)$ and $(x, A)$ not discovered}
+\State \Return $length(\texttt{BFS}.shortestpath)$
+\EndProcedure 
+
+\item[] {{\color{gray} State space used to generate nodes in BFS}}
+\Procedure{StateSpace}{$ X,  Y,  x,  y,  A $} 
+\State Let $B_1$ and $B_2$ denote bottles 1 and 2, respectively.
+\State $\texttt{states} = [(x, y)]$ \Comment{{\color{blue} Initialize state space array with initial state}}
+\NoThen
+\If{($x < A$) and ($y \neq A$)}:
+\State \textbf{FILLUP($B_1$)}
+\State $\texttt{states} $ += $(X, y)$ \Comment{{\color{blue} Augment to \texttt{states}}}
+\EndIf
+\If{($x \neq A$) and ($y < A$)}:
+\State \textbf{FILLUP($B_2$)}
+\State $\texttt{states} $ += $(x, Y)$\Comment{{\color{blue} Augment to \texttt{states}}}
+\EndIf
+\If{$x > 0$}:
+\State \textbf{EMPTY($B_1$)}
+\State $\texttt{states} $ += $ (0, y)$ \Comment{{\color{blue} Augment to \texttt{states}}}
+\EndIf
+\If{$y > 0$}:
+\State \textbf{EMPTY($B_2$)}
+\State $\texttt{states} $ += $ (x, 0)$ \Comment{{\color{blue} Augment to \texttt{states}}}
+\EndIf
+\If{($x > 0$) and ($y < Y$) and ($x + y \geq Y$)}
+\State \textbf{POUR($B_1,  B_2$)}
+\State $\texttt{states} $ += $ (x - \min\{x, Y - y\},  \ y + \min\{x, Y - y\})$ \Comment{{\color{blue} Augment to \texttt{states}}}
+\EndIf
+\If{($x < X$) and ($y > 0$) and ($x + y \geq X$) } 
+\State \textbf{POUR($B_2,  B_1$)}
+\State $\texttt{states} $ += $ (x + \min\{y, X - x\},  \ y - \min\{y,  X - x\})$ \Comment{{\color{blue} Augment to \texttt{states}}}
+\EndIf
+\State \Return $\texttt{states}$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\noindent
+\underline{Running Time}:  Running time depends on the number of outgoing edges from each node in the BFS tree (not including leaf nodes), and the number of outgoing edges at each node is conditional on the current state of the bottles.  In the worst case,  the maximum number of outgoing edges at any one node is 6 since the there are 6 possible actions in every state.  Then the maximum possible number states generated at each node is 6.  Thus, the number of possible states explored in BFS is $O(6^d)$,  where $d$ is the depth of the BFS tree. Therefore, the running time of BFS is $O(6^d)$. \\
+
+
+\noindent
+\underline{Correctness}: Since BFS computes the shortest path, this algorithm computes the length of the shortest path to one of the desired states. That is, it computes the smallest number of steps required for at least one of the two bottles to contain exactly $A$ liters of  water. \\ 
+
+\noindent
+\textbf{Note again: Pseudocode provided on next page. }
+
+%% PROBLEM FIVE
+\section*{Problem 5}
+\begin{proof}
+$(\Longrightarrow)$ 
+%First to show that if $\phi$ is satisfiable,  then there is not SCC of $G_{\phi}$ that contains both $x$ and $\neg x$.   
+Suppose there exists a strongly connected component containing both $x$ and $\neg x$ in $G_{\phi}$. Then, by definition of SCCs, there is a path from $x$ to $\neg x$ and a path from $\neg x$ to $x$.  If we assign $x = 1$ (i.e., True), then $\neg x = 0$ (i.e., False). Now consider the path from $x$ to $\neg x$:  $x \Longrightarrow v_1 \Longrightarrow \cdots   \ v_k \Longrightarrow  \neg x$.  At least one implication on this path must have a truth value of $0$ (or False) since $x = 1$ and $\neg x = 0$.   That is, there must be one implication such that $1 \Longrightarrow 0$ which has a value of $0$.  If instead $x$ is given a value of False, then the truth values of all implications on this path are True. However, this implies that the path from $\neg x$ to $x$ contains an implication with a truth value of $0$ (or False).  Therefore, there must exist at least one clause in the SCC containing both $x$ and $\neg x$ with a truth value of $0 \ \Longrightarrow \ \phi = 0$. 
+Hence, $\phi$ is not satisfiable.  \\
+
+\noindent
+$(\Longleftarrow)$ Suppose $G_{\phi}$ does not contain any SCCs containing both $x$ and $\neg x$.  It suffices to find an appropriate satisfying truth assignment for $\phi$.  To accomplish this,  we must find an appropriate way to assign truth values to each of the literals in $G_{\phi}$ such that the conjunction of all implications (edges in the graph) have a truth value of $1$.  For any $x$ and $y$, the implication $x \Longrightarrow y$ has a truth value of $1$ whenever $y = 1$,  for any true value of $x$.  Recall from the supposition that all literals and their negations in $G_{\phi}$ are not reachable from one another.  Using these facts,  assign a $1$ to all literals $v$ such that there is a path from $x$ to $v$; do this for all literals in $G_{\phi}$.  Since literals cannot be reached by their negation in $G_{\phi}$,  there will be no implications in $G_{\phi}$ of the form $1 \Longrightarrow 0$.  This results in a satisfying truth assignment for $\phi$.  Alternatively, we can use DFS to find all sink SCCs in $G_{\phi}$ and assign a truth value of $1$ to all literals in the sink SCCs. 
+\end{proof}
+
+\noindent
+\underline{Algorithm/Pseudocode for \texttt{2SAT}} \\
+Using the if and only if statement proved above, we can determine whether $G_{\phi}$ is satisfiable by computing the strongly-connected components in $G_{\phi}$ and subsequently evaluating whether the literals and their negation are in the same SCC. This can be done by running $\texttt{SCC}(G_{\phi})$, which runs DFS twice.  \\
+
+\noindent
+\textbf{Pseudocode provided on the next page.  It's too long to fit on this page. }\\ 
+
+\begin{algorithm}
+\begin{algorithmic}[1]
+\NoProc
+\Procedure{\texttt{2SAT}-Solver}{$G_{\phi}$}  
+\State Run $\texttt{SCC}(G_{\phi})$ to compute SCCs
+\State Let $SCC = $ output of $\texttt{SCC}(G_{\phi})$
+%\State $numSCCs = size(SCC.trees)$
+\State $satisfiability = $ `` "    \Comment{{\color{blue} Initialize empty string}}
+\State $truthAssignment = [ \ ]$
+%\For{$i = 1$ \textbf{to} $numSCCs$}:
+%\For{each $x \in SCC[i]$}:
+\For{each $SCC$}:
+\If{($x \in SCC$) \textbf{and} ($\neg x \in SCC$)}:
+\State $satisfiability = $ `UNSATISFIABLE'
+\Else:
+\State $satisfiability = $ `SATISFIABLE'
+\EndIf
+\EndFor
+%\EndFor
+\State \Return $satisfiability$ \\
+
+\If{$satisfiability == $ `SATISFIABLE'}:
+\For{each $SCC.sink \in G_{\phi}$}:
+\For{each $v \in SCC.sink$}:
+\State $v = 1$
+\EndFor
+\EndFor
+\For{each $SCC.source \in G_{\phi}$}:
+\For{each $w \in SCC.source$}:
+\State $w = 0$
+\EndFor
+\EndFor
+\State Let $truthAssignment = $ the truth values of all nodes computed above.
+
+\EndIf
+\State \Return $truthAssignment$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+
+\noindent
+\underline{Running Time}: The call to $\texttt{SCC}(G_{\phi})$ requires $O(n + m)$ time.  The first for-loop on line 6 iterates at most $n$ times, so the running time is $O(n)$. The for-loop on line 16 iterates at most $n$ times; in this case, the nested for-loop on line 17 will only run once since if the for-loop on line 16 runs $n$ times it implies that there are $n$ SCCs and thus each $SCC$ contains only one node.  Therefore, the running time of lines 15 to line 20 is $O(n)$. By a similar argument, the running time of lines 21 to line 25 is $O(n)$.  Lines 26 and 28 require $O(1)$ time.  The total running time is then $O(n + m)$.  Indeed,  $$O(n + m) + O(n) + O(n) + O(n) + c = O(n + m)$$
+
+\noindent
+\underline{Correctness}:  Correctness in determine satisfiability was shown above.  Using sink SCC to compute truth assignments was also argued in the proof above. 
+
+\noindent
+\textbf{Note again: Pseudocode is provided on next page}
+
+\end{document}
