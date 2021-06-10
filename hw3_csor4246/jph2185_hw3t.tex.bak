@@ -1,0 +1,321 @@
+\documentclass[twoside,11pt]{homework}
+
+\coursename{CSOR W4246 - Summer 2021} 
+
+\studname{Joseph High}
+\studmail{jph2185}
+\hwNo{3}
+\date{\today} 
+
+% Uncomment the next line if you want to use \includegraphics.
+%\usepackage{graphicx}
+\usepackage{graphicx}
+%\usepackage{fancyhdr}
+\usepackage{enumerate}
+\usepackage{amsmath}
+\usepackage{xfrac}
+\usepackage{relsize}
+\usepackage{mathtools}
+\usepackage{xfrac}
+\usepackage{dsfont}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[makeroom]{cancel}
+\usepackage{collectbox}
+\usepackage{placeins}
+%\usepackage{cleveref}
+\usepackage{eqnarray}
+%\usepackage{titlesec} 
+\usepackage{bm} 
+\usepackage{bbm}
+\usepackage{hyperref}
+\usepackage{flafter}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{algorithm}
+%\usepackage{algorithmic}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{subfig}
+\usepackage{soul}
+
+\algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+
+\algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
+
+\newcommand\NoDo{\renewcommand\algorithmicdo{}}
+\newcommand\ReDo{\renewcommand\algorithmicdo{\textbf{do}}}
+\newcommand\NoThen{\renewcommand\algorithmicthen{}}
+\newcommand\ReThen{\renewcommand\algorithmicthen{\textbf{then}}}
+\newcommand\NoEnd{\renewcommand\algorithmicend{}}
+\newcommand\NoFor{\renewcommand\algorithmicfor{}}
+\newcommand\NoProc{\renewcommand\algorithmicprocedure{}}
+\newcommand\NoIf{\renewcommand\algorithmicif{}}
+
+
+
+\newcommand{\commentsymbol}{{\color{blue} //}}% or \% or $\triangleright$
+\algrenewcommand\algorithmiccomment[1]{\hfill \commentsymbol{} #1}
+\makeatletter
+\newcommand{\LineComment}[2][\algorithmicindent]{\Statex \hspace{#1}\commentsymbol{} #2}
+\makeatother
+\newcommand{\varfont}{\texttt}
+
+%\makeatletter
+%\algrenewcommand\ALG@beginalgorithmic{\ttfamily}
+%\makeatother
+
+\algrenewcommand\textproc{\texttt}
+%\renewcommand*{\proofname}{Proof of Claim:}
+
+\newcommand{\note}[1]{\textcolor{yellow}{\colorbox{blue}{\parbox{16.3cm}{\textbf{\textsc{Note}: \ #1}}}}}
+
+\begin{document}
+\maketitle
+
+%% PROBLEM ONE
+\section*{Problem 1}
+
+\begin{enumerate}[\bf (i.)]
+
+\item From the conditions provided in the problem, each node $v \in V$ must satisfy the following demand constraint:
+$$ f^{\textrm{in}}(v) - f^{\textrm{out}}(v) = d(v)$$ 
+
+By the flow conservation condition for feasible flows: \ $f^{in}(v) = f^{out}(v)$ \\[0.4em]
+$\Longrightarrow \ \ \mathlarger{\sum_{v \in V} f^{\textrm{in}}(v) = \sum_{v \in V} f^{\textrm{out}}(v)} \ \  \Longleftrightarrow \ \ \ \mathlarger{\sum_{v \in V} f^{\textrm{in}}(v) - \sum_{v \in V} f^{\textrm{out}}(v) = 0}$ \\[0.4em]
+
+We then have that
+
+$$ \sum_{v \in V} d(v) \ = \ \sum_{v \in V} f^{\textrm{in}}(v) - f^{\textrm{out}}(v) \ = \ \sum_{v \in V} f^{\textrm{in}}(v) - \sum_{v \in V} f^{\textrm{out}}(v) \ = \ 0 $$
+
+\begin{align*}
+& \Longrightarrow \ \  \sum_{v \in V} d(v) = 0 \\[0.4em]
+& \Longrightarrow \ \  \sum_{v \in V} d(v) = \underbrace{\sum_{d(v) > 0} d(v)}_{=\sum_{v\in T} d(v)} \ + \ \underbrace{\sum_{d(v) < 0} d(v)}_{=\sum_{v\in S} d(v)} \ + \ \underbrace{\sum_{d(v) = 0} d(v)}_{=0 \ (\forall v \in V \setminus S \cup T)} = 0 \\[0.7em]
+& \Longrightarrow \ \ \sum_{v \in T} d(v) + \sum_{v \in S} d(v)  +  \cancelto{0}{\sum_{v \in V \setminus S \cup T} d(v)} = 0 \\[0.5em]
+& \Longrightarrow \ \ \sum_{v \in T} d(v) + \sum_{v \in S} d(v) = 0 \\[0.5em]
+& \Longrightarrow \ \ \sum_{v \in T} d(v) \ = \ - \sum_{v \in S} d(v)
+\end{align*}
+
+Hence, a necessary condition for a feasible circulation with demands to exist is 
+$$\sum_{v \in T} d(v) \ = \ - \sum_{v \in S} d(v) \ \ \ \ \   \textrm{and/or} \ \ \ \ \ \   \sum_{v \in V} d(v) = 0$$ 
+
+Furthermore,  the demand at nodes in $S$ or $T$ must not exceed the capacity of the edges leaving or entering the nodes in $S$ or $T$, respectively.   However, this condition is captured by the combination of the capacity constraints and the demand constraints. 
+%That is,  for each $ v \in T, \ \ d(v) \leq \mathlarger{\sum_{(v, u) \textrm{ entering } v \in T} c_{(v, u)}}$ \\ and for each $ v \in S,  \ \ d(v) \leq \mathlarger{\sum_{(v, u) \textrm{ leaving } v \in S} c_{(v, u)}}$
+
+\item Let $G = (V, E)$ be the flow network given in the problem.  The reduction is as follows: \\[0.2em]
+\textbf{Input:} $(G, c, d)$
+\begin{itemize}
+\item Input an instance $(G, c, d)$ as an adjacency list encoded as a binary string $x$.
+\item $G$ is the flow network/circulation.
+\item $c$ is the function of capacity constraints for each edge in the graph.
+\item $d$ is the function of demand constraints for each node in $G$.
+\end{itemize} 
+Transform an instance $x = (G, c, d)$ to an instance $y=(G', c', d', s, t)$. \\[0.4em]
+\textbf{Reduction Transformation:} From $G$, construct a new network  $G' = (V', E')$ where $V' = V \cup \{s, t\}$ and $E' = E \cup E_{N}$.  The node $s$ is a new, additional source node in $G'$ and $t$ is a new,  additional sink in $G'$.  The new set of edges $E_{N}$ is a set of directed edges from $s$ to all nodes in the set $S$ and directed edges from all nodes in $T$ to $t$.  That is,  $E_{N} = \{(s, v),  (u, t) : v \in S \textrm{ and } u \in T\}$.  For each $(u, t) \in E_{N}$, with  $u \in T$,  assign a capacity $c_{(u, t)} = d(u)$.  For each $(s, v) \in E_{N}$,  with $v \in S$,  assign a capacity $c_{(s, v)} = -d(v)$,  since $d(v) < 0$ for all $v \in S$ and capacities must be positive.  \\
+
+\textbf{Equivalence:} For any feasible circulation in $G$, the maximum flow can be achieved in $G'$ by assigning a flow value $f(u, t) = c_{(u, t)} = d(u)$ for all $ (u, t) \in E_{N} $ and $u \in T$, and a flow value $f(s, v) = c_{(s, v)} = -d(v)$ for all $(s, v) \in E_{N}$ and $v \in S$.  That is, assign flow values equal to the capacity of the corresponding edge.  Then clearly, the max flow value will be $\mathlarger{\sum_{v \in T} d(v)}$.  On the other hand, if the max flow is $\mathlarger{\sum_{v \in T} d(v)}$ in $G'$,  then this implies that every $e \in E_{N}$ is fully saturated at capacity (i.e., $f(e) = c_e$), which gives a feasible  solution to the max flow problem on the original network $G$, and thus a feasible circulation in $G$. \\
+
+\noindent
+\textbf{Efficiency/Complexity:} The input size $|x| = O(m \log n)$.  The reduction transformation can be done in polynomial-time.  The max-flow problem can be solved in polynomial-time if we use the Ford-Fulkerson algorithm (using BFS),  and we only make one call the black box for Max Flow.  Therefore,  the original problem can be solved in polynomial-time.  Hence, the reduction requires polynomial-time.
+
+
+\end{enumerate}
+
+
+
+
+
+%% PROBLEM TWO
+\section*{Problem 2}
+\textit{Note: My solution to this problem is inspired by experience with similar problems from previous optimization/financial engineering courses.}  \\[0.3em]
+
+\noindent
+As stated in the problem,  an arbitrage opportunity exists within currency exchange rates if  
+
+$$R[i_1, i_2] \cdot R[i_2, i_3] \cdots R[i_{k-1}, i_k] \cdot R[i_k, i_1]  =  \prod_{t =1}^{k-1} R[i_t , i_{t+1}] \cdot R[i_k , i_1] > 1$$
+or equivalently, 
+\begin{align*}
+\sum_{t =1}^{k-1} \ln R[i_t , i_{t+1}] + \ln R[i_k , i_1] > \ln (1) = 0  \ \Longleftrightarrow \ - \sum_{t =1}^{k-1} \ln R[i_t , i_{t+1}] - \ln R[i_k , i_1] < 0 
+\end{align*}
+
+\noindent
+Then we can apply a modified version of either the Bellman-Ford algorithm or the identical dynamic programming algorithm presented in class to a graph with vertices that represent the currencies and edge weights equal to $- \ln R[i, j]$ for any two currencies $c_i$ and $c_j$, where $i \neq j$ to detect whether or not the graph has negative cycles.  In particular,  we create a directed graph $G$ with two anti-parallel edges between every pair of currencies, $c_i$ and $c_j$,  to represent the fact that an exchange can be done in either direction.  More specifically,  letting $v_i \in V$ represent currency $c_i$,  the edge set is such that both $(v_i,  v_j) \in E$ and $(v_j, v_i) \in E$,  for all $i, j \in \{1, \dots, n \}$ and $i \neq j$.  That is,  the graph is a complete directed graph in the sense that every pair of nodes is an in-neighbor and out-neighbor of one another.  Finally,  for every $(v_i,  v_j) \in E$ let the associated edge weight be $w_{i,j} = - \ln R[i, j]$.  The algorithm will solely be used to detect whether any negative cycles exist in the graph,  and not to find a shortest path, and so a modified version of the Bellman-Ford algorithm will be used to accomplish this.  If the algorithm detects a negative cycle, it will return \texttt{True} and \texttt{False} otherwise,  which is the opposite of what the original Bellman-Ford algorithm returns for negative-cycle detection.  \\
+
+
+
+\noindent
+\textbf{Pseudocode is provided on the next page (not enough room on this page).}\\
+\begin{algorithm}
+\begin{algorithmic}[1]
+\NoProc
+\Procedure{ArbitrageDetect}{$c = [c_1, c_2, \dots,  c_n],  R $}:  
+\State $ G = $ \Call{ExchangeRateGraph}{$c,  R$}   \Comment{{\color{blue} Construct graph $G$. }}
+\State Fix any $s \in V$
+\State Run \Call{Bellman-Ford-Modified}{$G,  w,  s$}   
+%\If{\Call{Bellman-Ford-Modified}{$G,  w,  s$} returns \texttt{True}}
+%\State \Return \texttt{True}
+%\Else \ \Return \texttt{False}
+%\EndIf
+\EndProcedure  \\
+
+\NoProc
+\Procedure{Bellman-Ford-Modified}{$G, w, s$}:  
+\State {\color{red} Note: Only the modified portion shown}
+\State $\vdots$
+\State  {\color{gray} //Add the following to the end of the Bellman-Ford algorithm}
+\For{any $v \in V$}
+\If{$M[n, v] < M[n-1, v]$}  
+\State \Return \texttt{True}   \Comment{{\color{blue} Indicative of negative cycles if true}}
+\Else \ \Return \texttt{False}  \Comment{{\color{blue} Returns false if no negative cycles}}
+\EndIf
+\EndFor
+\EndProcedure  \\
+
+\NoProc
+\Procedure{ExchangeRateGraph}{$c = [c_1, c_2, \dots,  c_n],  R$}:   \Comment{{\color{blue} Constructs graph. }}
+\State Declare $G = (V, E, w)$ 
+\State $G.V = c$
+\For{$i = 1$ \textbf{to} $n$}
+\For{$j = 1$ \textbf{to} $n$}
+\State $G.E[i,j] = (G.V[i],  \ G.V[j])$
+\State $G.w[i, j] = -\ln R[i, j]$ 
+\EndFor
+\EndFor
+\State \Return $G = (V, E, w)$
+\EndProcedure 
+\end{algorithmic}
+\end{algorithm}
+
+\noindent
+\underline{Running Time}: Developing the graph takes $O(n^2)$ time.  The Bellman-Ford algorithm requires $O(nm)$ time,  but $m = O(n^2)$ since the graph is complete; thus, Bellman-Ford requires $O(n^3)$ time. Therefore, the total running time of the algorithm is $O(n^3)$.   \\
+
+
+\noindent
+\underline{Correctness}: If the graph contains negatives cycles,  one run of the Bellman-Ford algorithm will correctly detect it since the graph is complete (all nodes are reachable from one another).  More,  correctness of negative cycle detection follows from correctness of the Bellman-Ford algorithm (as correctness has already been proven in class).  %If the Bellman-Ford algorithm only needs t can be run from any $v \in V$
+
+
+
+%% PROBLEM THREE
+\section*{Problem 3}
+Let $A = \sum_{i=1}^n a_i$ and let $OPT(i,  S_I,  S_J)$ be a boolean indicator which indicates whether or \\[0.2em]
+not there exists a partitioning of the first $i$ integers $a_1, \dots,  a_i$ into $I, J, $ and $K$ such that \\[0.2em]
+$\sum_{i \in I} a_i  = S_I$ and $\sum_{j \in J} a_j  = S_J$ and $\sum_{k \in K} a_k  = A - S_I - S_J$ .   Let $M$ be a DP table that \\[0.2em]
+represents the values of $OPT(i,  S_I,  S_J)$. Then $M[i,  S_I,  S_J] = 1$ if there exists a partitioning \\[0.2em]
+of the first $i$ integers $a_1,  \dots,  a_i$ into $I, J, $ and $K$ such that $\sum_{i \in I} a_i  = S_I$ and $\sum_{j \in J} a_j  = S_J$ \\[0.2em]
+and $\sum_{k \in K} a_k  = A - S_I - S_J$,  and $M[t,  S_I,  S_J] = 0$ otherwise.  \\[0. %The algorithm recursively \\[0.2em] builds to the desired output of $M\left[n,  \frac{A}{3}, \frac{A}{3} \right]$, where $M$ is filled in from the top down (row-by-row).   \\[0.8em]
+\noindent
+Boundary conditions: 
+\begin{itemize}
+\item $OPT(0, 0, 0) = 1$ ,  since it is vacuously true that zero integers can be partitioned into three subsets such that the sum of each is equal to $0$. 
+\item $OPT(0, S_I,  S_J) = 0$ for $S_I ,  S_J > 0$.  Indeed,  it is impossible to partition zero integers such that the sum of at least one partition is a positive integer. 
+\end{itemize}
+
+\noindent
+Recursion:
+$$OPT(i, S_I, S_J) = OPT(i-1, S_I-a_i, S_J) \textbf{ OR } OPT(i-1, S_I, S_J-a_i) \textbf{ OR }  OPT(i-1, S_I, S_J) $$
+
+The algorithm recursively \\[0.2em] builds to the desired output of $M\left[n,  \frac{A}{3}, \frac{A}{3} \right]$, where $M$ is filled in from the top down (row-by-row).   \\[0.8em]
+%If the value of $M\left[n,  \frac{A}{3}, \frac{A}{3} \right] = 1$, then the 
+\begin{algorithm}
+\begin{algorithmic}[1]
+\NoProc
+\Procedure{Partition-Sum}{$ a = [a_1, \dots, a_n]$}:  
+\State Set $A = \sum_{i=1}^n a_i$
+\State Declare DP table $M$
+\State Initialize $M[0, 0, 0] = 1$ \Comment{{\color{blue} Boundary condition}}
+\For{($i \geq 1$) \textbf{and} ($j \geq 1$)}  \Comment{{\color{blue} Boundary conditions}}
+\State Initialize $M[0, i,  j] = 0$ 
+\EndFor
+\If{$A/3 \notin \mathbb{Z}$}
+\State \Return \texttt{False}
+\EndIf
+\For{$i=1$ \textbf{to} $n$}
+\For{$j=1$ \textbf{to} $A/3$}    
+\For{$k=1$ \textbf{to} $A/3$}
+\State $M[i, j, k] = M[i-1, j- a_i,  k] \textbf{ OR } M[i-1, j, k-a_i] \textbf{ OR }  M[i-1, j, k]$
+\EndFor
+\EndFor
+\EndFor
+\If{$M\left[n,  \frac{A}{3}, \frac{A}{3} \right] ==1 $}
+\State \Return \texttt{True}
+\Else \ \Return \texttt{False}
+\EndIf
+\EndProcedure 
+\end{algorithmic}
+\end{algorithm}
+
+
+\noindent
+\underline{Space}:  The algorithm has an additional space requirement of $\Theta(nA^2)$ for the DP matrix $M$.  \\
+
+
+\noindent
+\underline{Running Time}: The sum at line 2 requires $O(n)$ time.  Initializing $M$ requires $O(nA^2)$ time. The recursion iterates $O(nA^2)$ times,  each of which takes constant time since each of the values were computed in earlier steps.  Therefore,  the total running time of the algorithm is then $O(nA^2)$.   \\
+
+
+%\noindent
+%\underline{Correctness}:  Per the HW instructions, a proof of correctness is not required for DP algorithms.
+
+
+%% PROBLEM FOUR
+\section*{Problem 4}
+This decision/feasibility problem can be transformed to a Max-Flow problem by modeling the given parameters on a flow network and subsequently solving the Max-Flow problem on the constructed flow network.  In particular, construct a directed graph $G = (V, E)$ where $V$ consists of a vertex for each injured person, which we denote by $v_i,  \ i = 1, \dots,  n$; a vertex for each hospital,  which we denote by $h_j,  \ j = 1,  \dots,  k$; and a source node,  and a sink node.  For  each person node $v_i$ add a directed edge from $v_i$ to all $h_j$ that the person $v_i$ is able to arrive at within the half-hour driving time from their current location to the edge set $E$.  For all $j = 1, \dots, k$, add a directed edge from hospital node $h_j$ to the sink node $t$.  For each $i = 1, \dots, n$,  add a directed edge from the sink node to injured patient node $v_i$.  Letting $c$ be the capacity constraint function,  the following edge capacities will be set:
+\begin{itemize}
+\item  For each edge from the source to injured person nodes,  set the capacity to be $c(s,  v_i) = 1$
+{\color{blue} (Since each patient adds at most one to the count.)}
+\item  For each edge $(v_i, h_j)$ (from person $i$ to hospital $j$), set the capacity to be $c(v_i, h_j) = 1$ 
+{\color{blue} (To constrain the source node to sending at most one unit of flow from $s \rightarrow v_i \rightarrow h_j \rightarrow t $ for a given pair $i,  j$.)}
+\item  For each edge from hospital $j$ to the sink node,  set the capacity to be $c(h_j,  t) = \lceil \frac{n}{k} \rceil$
+{\color{blue} (To capture hospital load constraint.)}
+\end{itemize}
+\noindent
+Solve \Call{Max Flow}{D} on input $(G = (V, E),  s, t)$; answer \textbf{yes} if $\max |f| = n$ and \textbf{no} if $\max |f| < n$. \\
+
+\noindent
+On the flow network constructed above,  run the Ford-Fulkerson algorithm to solve the Max Flow problem.  If the maximum flow value is equal to $n$, then this indicates that all $n$ injured people were brought to a hospital.  Otherwise,  if the max flow less than $n$, then it is not feasible for all $n$ people to be sent to the $k$ hospitals. Accordingly,  if $\max |f| = n$ the algorithm returns \texttt{True}; otherwise, the algorithm returns \texttt{False}.
+
+\begin{algorithm}
+\begin{algorithmic}[1]
+\NoProc
+\Procedure{Hospital-Flow}{$P = \{p_1,  \dots, p_n\},  H = \{h_i, \dots,  h_k \},  L = \{l_1, \dots, l_n\}$}:  
+\State {\color{gray} //$L$ denotes the set of $n$ locations for the $n$ people.}
+\State Construct flow network on input $(P, H, L)$  \Comment{{\color{blue} Using construction described above}}
+\State Let $G$ be the constructed flow network
+\State Run \Call{Ford-Fulkerson}{$G$}
+\If{$\max |f| == n$}
+\State \Return \texttt{True}
+\ElsIf{$\max |f| < n$}
+\State \Return \texttt{False}
+\EndIf
+\EndProcedure 
+\end{algorithmic}
+\end{algorithm}
+
+
+\noindent
+\underline{Correctness/Equivalence}:  If the $\max |f| = n$,  this implies that all $n$ injured people are able to be sent to a hospital.  Indeed,  $|f| = f^{in}(t)$,  and since there is exactly one edge going from each hospital to $t$, this implies that when the max flow is achieved, the hospitals received all $n$ patients.  On the other hand,  if there exists a flow $f'$ in the network in which all $n$ people can be sent to a hospital,  the maximum flow can be achieved by saturating all edges leaving the source,  and subsequently send flow down $f'$ to the sink node.  Hence,  the Max-Flow problem is a yes instance if and only if the feasibility problem of sending patients to hospitals is a yes instance.  \\
+
+\noindent
+\underline{Running Time}:  The flow network has $|V| = n + k$ nodes and contains at most $nk + n + k$ edges; indeed,  there are exactly $n$ edges from the source node and injured people,  at most $nk$ edges from people to hospitals, and $k$ nodes from hospitals to the sink node.  Therefore,  constructing the flow network requires $O(nk)$ time.  Running Ford-Fulkerson (using BFS) requires $O(|V| \cdot |E|) = O((n+k) \cdot nk)  = O(n^2k + nk^2)$ time.  Therefore, the total running time of the algorithm is $O(n^2k + nk^2)$. Hence,  the algorithm/reduction requires polynomial time.
+
+
+ 
+
+
+%% PROBLEM FIVE
+\section*{Problem 5}
+Unfortunately,  I did not have time to complete Problem 5.  \\
+
+
+
+%\noindent
+%\underline{Running Time}:    \\
+%
+%
+%\noindent
+%\underline{Correctness}: 
+
+
+
+
+\end{document}
